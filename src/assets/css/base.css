@@ -17,7 +17,7 @@ h3,
 h4,
 h5,
 h6,
-` 1 p,
+p,
 blockquote,
 pre,
 address,
@@ -60,7 +60,10 @@ progress {
   border: 0;
 }
 
+ul,
 li {
+  padding: 0;
+  margin: 0;
   list-style: none
 }
 
@@ -317,4 +320,10 @@ th {
 .borDE {
   box-sizing: border-box;
   border: 1px solid #dedede;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

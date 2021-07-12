@@ -5,13 +5,14 @@ import Vuex from 'vuex'
 import store from './store'
 import App from './App'
 import router from './router'
-// import 'element-ui/lib/theme-chalk/index.css'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
 // import element from './element/index'
 
 import './assets/css/base.css' /* 清除默认样式 */
 Vue.config.productionTip = false
 
-// Vue.use(element)
+Vue.use(ElementUI)
 Vue.use(Vuex)
 /* eslint-disable no-new */
 new Vue({

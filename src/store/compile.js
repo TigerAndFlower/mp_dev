@@ -1,26 +1,23 @@
 // compileList 编辑页的列表数据
-import Vue from 'vue'
 const state = {
   compileList: [1, 2, 3],
-  indexList: [1, 2, 3, 4, 5]
+  indexList: [1, 2, 3, 4, 5],
+  isMask: true
 }
 
 const mutations = {
   setCompileList (state, compileList) {
-    for (let key in compileList) {
-      Vue.set(state.compileList, key, compileList[key])
-    }
+    state.compileList = compileList
   },
-  setIndexList (state, indexList) {
-    for (let key in indexList) {
-      Vue.set(state.indexList, key, indexList[key])
-    }
+  setIsMask (state, isMask) {
+    state.isMask = isMask
   }
 }
 
 const getters = {
-  compileList: state => state.compileList.filter(todo => todo.done),
-  indexList: state => state.indexList.filter(todo => todo.done)
+  compileList: state => state.compileList,
+  indexList: state => state.indexList,
+  isMask: state => state.isMask
 }
 export default {
   state,
