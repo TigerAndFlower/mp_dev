@@ -10,7 +10,22 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/api': {                       //需要代理的接口
+        target: 'http://mp.ofweek.com', //目标服务器
+        changeOrigin: true,　　　　　　 //是否跨域
+        pathRewrite: {
+          '^/api': ''             //重定向
+        }
+      },
+      '/wenku': {                       //需要代理的接口
+        target: '//wenku.ofweek.com/api/ofweek_mp.php', //目标服务器
+        changeOrigin: true,　　　　　　 //是否跨域
+        pathRewrite: {
+          '^/wenku': ''             //重定向
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

@@ -3,291 +3,271 @@
     <h3 class="title">编辑内容区</h3>
     <!-- 编辑页面详情 -->
     <div class="main">
-      <!-- 企业介绍 -->
-      <!--
-        关于XXX企业号名称，“XXX”从后台返回数据；
-        - 企业介绍：内容从个人后台添加，字数400字内；
-        - 企业图片：图片从个人后台添加，图片自动轮播也可手动点击切换，图片数量不超过3张；
-        如企业在个人后台添加了跳转链接，点击图片可跳转到对应的网址。
-       -->
-      <div class="box borDE">
-        <div class="setBox">
-          <p>企业介绍</p>
-          <i class="go_top_on"
-             @click.stop="goTop(index)"></i>
-          <i class="go_bottom"
-             @click.stop="goBottom(index)"></i>
-          <i class="close"
-             @click.stop="close(index)"></i>
-        </div>
-        <div class="intro wrap">
-          <div class="left">
-            <!-- 标题跟文字 -->
-            <div class="title">
-              <h3>关于欧司朗光电半导体</h3>
-            </div>
-            <div class="text">
-              <textarea name=""
-                        maxlength="400"
-                        placeholder="请填写企业介绍（400字内）"></textarea>
-            </div>
-            <p class="num">0/400</p>
+      <template v-for="(item,index) in compileList">
+        <div class="box "
+             :class="{borDE: item.type == 1}"
+             :key="index">
+          <div class="setBox">
+            <p>{{item.name}}</p>
+            <i :class="index === 0?'go_top_on':'go_top'"
+               @click.stop="goTop(index)"></i>
+            <i :class="index === (compileList.length - 1)?'go_bottom_on':'go_bottom'"
+               @click.stop="goBottom(index)"></i>
+            <i class="close"
+               @click.stop="close(index)"></i>
           </div>
-          <div class="right">
-            <!-- 图片 -->
-            <template v-if="imgList.length > 0">
-              <div class="addElement"
-                   @click="addElementFunc()">去添加</div>
-              <el-carousel indicator-position="none">
-                <el-carousel-item v-for="(item, index) in imgList"
-                                  :key="index">
-                  <h3>{{ item }}</h3>
-                </el-carousel-item>
-              </el-carousel>
-            </template>
-            <template v-else>>
-              <div class="upImgBegin">
+          <template v-if="item.type== 1">
+            <!--
+              - 企业介绍
+              - 关于XXX企业号名称，“XXX”从后台返回数据；
+              - 企业介绍：内容从个人后台添加，字数400字内；
+              - 企业图片：图片从个人后台添加，图片自动轮播也可手动点击切换，图片数量不超过3张；
+              如企业在个人后台添加了跳转链接，点击图片可跳转到对应的网址。
+            -->
+            <div class="intro wrap">
+              <div class="left">
+                <!-- 标题跟文字 -->
+                <div class="title">
+                  <h3>关于{{item.interName}}</h3>
+                </div>
+                <div class="text">
+                  <textarea name=""
+                            maxlength="400"
+                            v-model="item.interText"
+                            placeholder="请填写企业介绍（400字内）"></textarea>
+                </div>
+                <p class="num">{{item.interText.length}}/400</p>
+              </div>
+              <div class="right">
+                <!-- 图片 -->
+                <template v-if="imgList.length > 0">
+                  <div class="addElement"
+                       @click="addElementFunc('企业图片',index)">去添加</div>
+                  <el-carousel indicator-position="none">
+                    <el-carousel-item v-for="(item, index) in imgList"
+                                      :key="index">
+                      <h3>{{ item }}</h3>
+                    </el-carousel-item>
+                  </el-carousel>
+                </template>
+                <template v-else>>
+                  <div class="upImgBegin">
+
+                  </div>
+                </template>
 
               </div>
-            </template>
-
-          </div>
-        </div>
-      </div>
-      <!-- 企业动态 -->
-      <!--
-        -企业动态：数据由企业从个人后台添加（调该企业发布过的文章数据，让企业自己勾选），最多显示5篇文章，
-        点击跳转到对应的文章详情页，鼠标悬停背景条给0.8的透明度；
-        -精彩视频：数据由企业从个人后台添加（调该企业发布过的视频数据），最多显示4个视频，
-        点击跳转到对应的视频详情页播放，视频标题显示一行，超出…如果未发布过视频，则隐藏视频模块、
-        企业动态模块自动调整宽度为1120px；
-       -->
-      <div class="box">
-        <div class="setBox">
-          <p>企业介绍</p>
-          <i class="go_top"
-             @click.stop="goTop(index)"></i>
-          <i class="go_bottom"
-             @click.stop="goBottom(index)"></i>
-          <i class="close"
-             @click.stop="close(index)"></i>
-        </div>
-        <div class="dynamic wrap">
-          <div class="left">
+            </div>
+          </template>
+          <template v-if="item.type== 2">
+            <!--
+              - 企业动态
+              - 企业动态：数据由企业从个人后台添加（调该企业发布过的文章数据，让企业自己勾选），最多显示5篇文章，
+              - 点击跳转到对应的文章详情页，鼠标悬停背景条给0.8的透明度；
+              - 精彩视频：数据由企业从个人后台添加（调该企业发布过的视频数据），最多显示4个视频，
+              - 点击跳转到对应的视频详情页播放，视频标题显示一行，超出…如果未发布过视频，则隐藏视频模块、
+              - 企业动态模块自动调整宽度为1120px；
+            -->
+            <div class="dynamic wrap">
+              <div class="left">
+                <div class="addElement"
+                     @click="addElementFunc('企业动态',index)">去添加</div>
+                <!-- 企业动态 -->
+                <div class="boxTitle">
+                  <img src="../../assets/images/icon/icon_title1.png"
+                       alt=""
+                       class="icon">
+                  <h4>企业动态</h4>
+                </div>
+                <ul class="textlist">
+                  <template v-if="item.dynamicList.length === 0">
+                    <li class="ellipsis">文章标题</li>
+                    <li>文章标题</li>
+                    <li>文章标题</li>
+                    <li>文章标题</li>
+                    <li>文章标题</li>
+                  </template>
+                  <template v-else>
+                    <li v-for="(indynamic,indynamicIndex) in item.dynamicList"
+                        :key="indynamicIndex"
+                        class="ellipsis">
+                      {{indynamic.title}}
+                    </li>
+                  </template>
+                </ul>
+              </div>
+              <div class="right">
+                <!-- 图片 -->
+                <div class="addElement"
+                     @click="addElementFunc('精彩视频',index)">去添加</div>
+                <div class="boxTitle">
+                  <img src="../../assets/images/icon/icon_title2.png"
+                       alt=""
+                       class="icon">
+                  <h4>精彩视频</h4>
+                </div>
+                <ul class="videoList">
+                  <li>
+                    <div class="videoWrap">
+                      <img src=""
+                           alt="">
+                      <img src="../../assets/images/icon/icon_play.png"
+                           alt=""
+                           class="icon_play">
+                    </div>
+                    <p>视频标题</p>
+                  </li>
+                  <li>
+                    <div class="videoWrap">
+                      <img src=""
+                           alt="">
+                      <img src="../../assets/images/icon/icon_play.png"
+                           alt=""
+                           class="icon_play">
+                    </div>
+                    <p>视频标题</p>
+                  </li>
+                  <li>
+                    <div class="videoWrap">
+                      <img src=""
+                           alt="">
+                      <img src="../../assets/images/icon/icon_play.png"
+                           alt=""
+                           class="icon_play">
+                    </div>
+                    <p class="ellipsis">视频标题</p>
+                  </li>
+                  <li>
+                    <div class="videoWrap">
+                      <img src=""
+                           alt="">
+                      <img src="../../assets/images/icon/icon_play.png"
+                           alt=""
+                           class="icon_play">
+                    </div>
+                    <p class="ellipsis">视频标题</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </template>
+          <template v-if="item.type== 3">
+            <!--
+              - 直播
+              - 数据由企业从个人后台添加，新直播系统提供接口（显示封面图、活动名称、直播时间、举办单位、直播简介）
+              - 直播状态分为三种：
+              - 1、直播中，按钮颜色为：#ed3f40，点击进入直播页面观看直播；
+              - 2、直播预告，点击按钮去预约；
+              - 3、直播回顾，点击进入直播页面看回顾视频。
+            -->
             <div class="addElement"
-                 @click="addElementFunc()">去添加</div>
-            <!-- 企业动态 -->
+                 @click="addElementFunc('直播',index)">去添加</div>
             <div class="boxTitle">
-              <img src="../../assets/images/icon/icon_title1.png"
+              <img src="../../assets/images/icon/icon_title3.png"
                    alt=""
                    class="icon">
-              <h4>企业动态</h4>
+              <h4>直播</h4>
             </div>
-            <ul class="textlist">
-              <li class="ellipsis">文章标题</li>
-              <li>文章标题</li>
-              <li>文章标题</li>
-              <li>文章标题</li>
-              <li>文章标题</li>
-            </ul>
-          </div>
-          <div class="right">
-            <!-- 图片 -->
+            <div class="live wrap borDE">
+              <div class="left">
+                <div class="liveBg">
+                  <img src="../../assets/images/live_bg.png"
+                       alt=""
+                       class="liveImg">
+                </div>
+              </div>
+              <div class="right">
+                <h4>直播标题</h4>
+                <p>
+                  <span>直播时间：</span>
+                  <span class="c">ss-ss-ss</span>
+                </p>
+                <p>
+                  <span>举办单位：</span>
+                  <span class="c">ss-ss-ss</span>
+                </p>
+                <p>
+                  <span>直播简介：</span>
+                  <span class="c">我家門前有兩棵樹，一顆是棗樹，另一顆也是棗樹</span>
+                </p>
+              </div>
+            </div>
+          </template>
+          <template v-if="item.type== 4">
+            <!--
+              - 文档下载
+              - 数据由企业从个人后台添加（调该企业发布过的文档数据），文库提供接口，
+              - 前端显示数量不得超过4个，点击“立即下载”跳转到文库详情页下载，文档标题不超过2行；
+              - 如果模块无内容，前端生成页面自动隐藏该模块。
+            -->
             <div class="addElement"
-                 @click="addElementFunc()">去添加</div>
+                 @click="addElementFunc('文档下载',index)">去添加</div>
             <div class="boxTitle">
-              <img src="../../assets/images/icon/icon_title2.png"
+              <img src="../../assets/images/icon/icon_title4.png"
                    alt=""
                    class="icon">
-              <h4>精彩视频</h4>
+              <h4>文档下载</h4>
             </div>
-            <ul class="videoList">
-              <li>
-                <div class="videoWrap">
-                  <img src=""
-                       alt="">
-                  <img src="../../assets/images/icon/icon_play.png"
+            <div class="downLoad wrap">
+              <ul class="list">
+                <li>
+                  <img src="../../assets/images/icon/icon_pdf.png"
                        alt=""
-                       class="icon_play">
-                </div>
-                <p>视频标题</p>
-              </li>
-              <li>
-                <div class="videoWrap">
-                  <img src=""
-                       alt="">
-                  <img src="../../assets/images/icon/icon_play.png"
-                       alt=""
-                       class="icon_play">
-                </div>
-                <p>视频标题</p>
-              </li>
-              <li>
-                <div class="videoWrap">
-                  <img src=""
-                       alt="">
-                  <img src="../../assets/images/icon/icon_play.png"
-                       alt=""
-                       class="icon_play">
-                </div>
-                <p class="ellipsis">视频标题</p>
-              </li>
-              <li>
-                <div class="videoWrap">
-                  <img src=""
-                       alt="">
-                  <img src="../../assets/images/icon/icon_play.png"
-                       alt=""
-                       class="icon_play">
-                </div>
-                <p class="ellipsis">视频标题</p>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <!-- 直播 -->
-      <!--
-        数据由企业从个人后台添加，新直播系统提供接口（显示封面图、活动名称、直播时间、举办单位、直播简介）
-        直播状态分为三种：
-        1、直播中，按钮颜色为：#ed3f40，点击进入直播页面观看直播；
-        2、直播预告，点击按钮去预约；
-        3、直播回顾，点击进入直播页面看回顾视频。
-       -->
-      <div class="box ">
-        <div class="setBox">
-          <p>企业介绍</p>
-          <i class="go_top"
-             @click.stop="goTop(index)"></i>
-          <i class="go_bottom"
-             @click.stop="goBottom(index)"></i>
-          <i class="close"
-             @click.stop="close(index)"></i>
-        </div>
-        <div class="addElement"
-             @click="addElementFunc()">去添加</div>
-        <div class="boxTitle">
-          <img src="../../assets/images/icon/icon_title3.png"
-               alt=""
-               class="icon">
-          <h4>直播</h4>
-        </div>
-        <div class="live wrap borDE">
-          <div class="left">
-            <div class="liveBg">
-              <img src="../../assets/images/live_bg.png"
-                   alt=""
-                   class="liveImg">
+                       class="iconPdf">
+                </li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+              </ul>
             </div>
-          </div>
-          <div class="right">
-            <h4>直播标题</h4>
-            <p>
-              <span>直播时间：</span>
-              <span class="c">ss-ss-ss</span>
-            </p>
-            <p>
-              <span>举办单位：</span>
-              <span class="c">ss-ss-ss</span>
-            </p>
-            <p>
-              <span>直播简介：</span>
-              <span class="c">我家門前有兩棵樹，一顆是棗樹，另一顆也是棗樹</span>
-            </p>
-          </div>
-        </div>
-      </div>
-      <!-- 文档下载 -->
-      <!--
-        数据由企业从个人后台添加（调该企业发布过的文档数据），文库提供接口，
-        前端显示数量不得超过4个，点击“立即下载”跳转到文库详情页下载，文档标题不超过2行；
-        如果模块无内容，前端生成页面自动隐藏该模块。
-       -->
-      <div class="box ">
-        <div class="setBox">
-          <p>企业介绍</p>
-          <i class="go_top"
-             @click.stop="goTop(index)"></i>
-          <i class="go_bottom"
-             @click.stop="goBottom(index)"></i>
-          <i class="close"
-             @click.stop="close(index)"></i>
-        </div>
-        <div class="addElement"
-             @click="addElementFunc()">去添加</div>
-        <div class="boxTitle">
-          <img src="../../assets/images/icon/icon_title4.png"
-               alt=""
-               class="icon">
-          <h4>文档下载</h4>
-        </div>
-        <div class="downLoad wrap">
-          <ul class="list">
-            <li>
-              <img src="../../assets/images/icon/icon_pdf.png"
+          </template>
+          <template v-if="item.type== 5">
+            <!--
+              - 产品介绍
+              - 数据由企业从个人后台添加，新直播系统提供接口（该企业的主播号发布的产品），
+              - 前端显示数量不得超过6个，点击产品图或标题可跳转到新直播系统对应的产品详情页
+              - 内容数和粉丝数跟现网保持一致。
+            -->
+            <div class="addElement"
+                 @click="addElementFunc('产品介绍',index)">去添加</div>
+            <div class="boxTitle">
+              <img src="../../assets/images/icon/icon_title5.png"
                    alt=""
-                   class="iconPdf">
-            </li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-          </ul>
+                   class="icon">
+              <h4>产品介绍</h4>
+            </div>
+            <div class="product wrap">
+              <ul class="list">
+                <li>
+                  <img src="../../assets/images/icon/icon_img.png"
+                       alt=""
+                       class="liImg">
+                  <p class="ellipsis">产品标题</p>
+                </li>
+                <li>
+                  <img src="../../assets/images/icon/icon_img.png"
+                       alt=""
+                       class="liImg">
+                  <p class="ellipsis">产品标题</p>
+                </li>
+                <li>
+                  <img src="../../assets/images/icon/icon_img.png"
+                       alt=""
+                       class="liImg">
+                  <p class="ellipsis">产品标题</p>
+                </li>
+                <li>
+                  <img src="../../assets/images/icon/icon_img.png"
+                       alt=""
+                       class="liImg">
+                  <p class="ellipsis">产品标题</p>
+                </li>
+              </ul>
+            </div>
+          </template>
         </div>
-      </div>
-      <!-- 产品介绍 -->
-      <!--
-        数据由企业从个人后台添加，新直播系统提供接口（该企业的主播号发布的产品），
-        前端显示数量不得超过6个，点击产品图或标题可跳转到新直播系统对应的产品详情页
-        内容数和粉丝数跟现网保持一致。
-       -->
-      <div class="box ">
-        <div class="setBox">
-          <p>企业介绍</p>
-          <i class="go_top"
-             @click.stop="goTop(index)"></i>
-          <i class="go_bottom"
-             @click.stop="goBottom(index)"></i>
-          <i class="close"
-             @click.stop="close(index)"></i>
-        </div>
-        <div class="addElement"
-             @click="addElementFunc()">去添加</div>
-        <div class="boxTitle">
-          <img src="../../assets/images/icon/icon_title5.png"
-               alt=""
-               class="icon">
-          <h4>产品介绍</h4>
-        </div>
-        <div class="product wrap">
-          <ul class="list">
-            <li>
-              <img src="../../assets/images/icon/icon_img.png"
-                   alt=""
-                   class="liImg">
-              <p class="ellipsis">产品标题</p>
-            </li>
-            <li>
-              <img src="../../assets/images/icon/icon_img.png"
-                   alt=""
-                   class="liImg">
-              <p class="ellipsis">产品标题</p>
-            </li>
-            <li>
-              <img src="../../assets/images/icon/icon_img.png"
-                   alt=""
-                   class="liImg">
-              <p class="ellipsis">产品标题</p>
-            </li>
-            <li>
-              <img src="../../assets/images/icon/icon_img.png"
-                   alt=""
-                   class="liImg">
-              <p class="ellipsis">产品标题</p>
-            </li>
-          </ul>
-        </div>
-      </div>
+      </template>
       <div class="box">
         <el-row>
           <el-button type="primary">提交</el-button>
@@ -296,7 +276,10 @@
       </div>
     </div>
     <!-- 弹窗 -->
-    <maskPop />
+    <maskPop :isType="isType"
+             :ind="ind"
+             :key="isType"
+             v-if="isMask" />
   </div>
 </template>
 
@@ -307,20 +290,43 @@ export default {
   name: 'show',
   data () {
     return {
-      imgList: ['../../assets/images/compileRightList01.png', '../../assets/images/compileRightList03.png']
+      imgList: ['../../assets/images/compileRightList01.png', '../../assets/images/compileRightList03.png'],
+      isType: '',
+      ind: 0,
+      isShow: true
     }
   },
   mounted () {
+    // this.deepClone(this.compileList)
+    // 上移
   },
   methods: {
-    ...mapMutations(['setCompileList']),
-    addElementFunc: function (type) {
-      console.log(type)
+    ...mapMutations(['setCompileList', 'setIsMask']),
+    // upDom: function () {
+    //   this.isShow = false
+    //   setTimeout(() => {
+    //     this.$nextTick(() => {
+    //       this.isShow = true
+    //     })
+    //   }, 0)
+    // },
+    addElementFunc: function (type, index) {
+      this.isType = type
+      this.ind = index
+      this.setIsMask(!this.isMask)
+    },
+    goTop: function (i) {
+      if (i === 0) return false
+      console.log(i)
+    },
+    goBottom: function (i) {
+      if (i === (this.compileList.length - 1)) return false
+      console.log(i)
     }
   },
   components: { maskPop },
   computed: {
-    ...mapGetters(['compileList'])
+    ...mapGetters(['compileList', 'indexList', 'isMask'])
   }
 }
 </script>
@@ -346,6 +352,7 @@ export default {
     font-weight: 400
     color: #FFFFFF
     line-height: 30px
+    cursor: pointer
   .box
     position: relative
     width: 1120px
