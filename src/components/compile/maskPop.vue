@@ -200,20 +200,20 @@ export default {
           break
         case '直播':
           this.getMessage(findLiveRoomListByid, 'liveList')
-          axios.get('/api//Homepage/getPageVideoList', {
-            params: { 'key': 'value' }
-          }).then(function (response) {
-            alert(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config))
-          }).catch(function (error) {
-            alert(error)
-          })
-          axios.get('/live//Homepage/getPageVideoList', {
-            params: { 'key': 'value' }
-          }).then(function (response) {
-            alert(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config))
-          }).catch(function (error) {
-            alert(error)
-          })
+          // axios.get('/api//Homepage/getPageVideoList', {
+          //   params: { 'key': 'value' }
+          // }).then(function (response) {
+          //   alert(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config))
+          // }).catch(function (error) {
+          //   alert(error)
+          // })
+          // axios.get('/live//Homepage/getPageVideoList', {
+          //   params: { 'key': 'value' }
+          // }).then(function (response) {
+          //   alert(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config))
+          // }).catch(function (error) {
+          //   alert(error)
+          // })
           break
         case '文档下载':
           break
