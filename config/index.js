@@ -19,21 +19,27 @@ module.exports = {
         }
       },
       '/live': {
-        target: 'http://live.ofweek.com/api',
+        target: 'https://livetest.ofweek.com',
         changeOrigin: true,
         pathRewrite: {
           '^/live': ''
         }
       },
       '/wenku': {
-        target: '//wenku.ofweek.com/api/ofweek_mp',
+        target: 'https://wenku.ofweek.com',
         changeOrigin: true,
         pathRewrite: {
           '^/wenku': ''
         }
       }
     },
-
+    contentBase: path.join(__dirname, 'dist'),
+    publicPath: '/',
+    compress: true,
+    disableHostCheck: true,
+    historyApiFallback: true,
+    https: true,
+    port: 443,
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined

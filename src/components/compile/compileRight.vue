@@ -56,6 +56,7 @@ export default {
     },
 
     addItemFunc (index) {
+      //
       this.lists[index].isShow = !this.lists[index].isShow
       console.log(this.lists)
     }

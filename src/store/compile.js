@@ -21,12 +21,7 @@ const state = {
     {
       type: 3,
       name: '直播',
-      liveList: [],
-      liveImg: '',
-      title: '',
-      time: '',
-      corporation: '',
-      intro: ''
+      liveList: []
     },
     {
       type: 4,
@@ -47,19 +42,24 @@ const state = {
 const mutations = {
   setCompileList (state, obj) {
     let { type, setName, arr } = obj
-    state.compileList.forEach((item, index) => {
-      if (item.type === type) {
-        for (var p in item) {
-          if (p === setName) {
-            console.log(arr)
-            console.log(state.compileList[index][setName])
-            debugger
-            state.compileList[index][setName] = arr
-            return
+    // debugger
+    if (type === 'all') {
+      state.compileList = arr
+    } else {
+      state.compileList.forEach((item, index) => {
+        if (item.type === type) {
+          for (var p in item) {
+            if (p === setName) {
+              // console.log(arr)
+              // console.log(state.compileList[index][setName])
+              // debugger
+              state.compileList[index][setName] = arr
+              return
+            }
           }
         }
-      }
-    })
+      })
+    }
   },
   setIsMask (state, isMask) {
     state.isMask = isMask

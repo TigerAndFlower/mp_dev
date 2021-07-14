@@ -30,3 +30,25 @@ export function getQueryString (name) {
     return null
   }
 }
+export function formatDate (value, format) {
+  value = typeof value === 'string' ? value.replace(/-/g, '/') : value
+  const d = new Date(value)
+  let year = d.getFullYear()
+  let month = d.getMonth() + 1
+  let day = d.getDate()
+  let hour = d.getHours()
+  let minutes = d.getMinutes()
+  let resultStr = 'YYYY-MM-DD hh:mm'
+
+  month = month < 10 ? '0' + month : month
+  day = day < 10 ? '0' + day : day
+  hour = hour < 10 ? '0' + hour : hour
+  minutes = minutes < 10 ? '0' + minutes : minutes
+
+  resultStr = resultStr.replace('YYYY', year)
+    .replace('MM', month)
+    .replace('DD', day)
+    .replace('hh', hour)
+    .replace('mm', minutes)
+  return resultStr
+}

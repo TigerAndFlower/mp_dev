@@ -7,7 +7,7 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import { deepClone, getQueryString } from './assets/js/common'
+import { deepClone, getQueryString, formatDate } from './assets/js/common'
 
 import './assets/css/base.css'
 /* 清除默认样式 */
@@ -17,7 +17,8 @@ Vue.use(ElementUI)
 Vue.use(Vuex)
 Vue.prototype.deepClone = deepClone
 Vue.prototype.getQueryString = getQueryString
-
+Vue.prototype.formatDate = formatDate
+// 注册时间格式过滤器
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

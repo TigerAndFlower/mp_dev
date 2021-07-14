@@ -42,12 +42,13 @@
                 </template>
               </td>
               <td class="infinite-list-item"
-                  v-show="isType === '精彩视频' || isType === '直播'">
-                <img :src="'http://mp.ofweek.com'+item.images"
+                  v-show="isType === '精彩视频' || isType === '直播' || isType === '产品介绍'">
+                <img :src="isType === '产品介绍'?item.imageUrl:(isType === '直播'?item.coverUrl:('http://mp.ofweek.com'+ item.images))"
                      alt="">
               </td>
-              <td class="infinite-list-item">
-                {{item.title}}
+              <td class="
+                     infinite-list-item">
+                {{isType === '产品介绍'?item.productName:(isType === '直播'?item.name:item.title)}}
               </td>
             </tr>
           </tbody>
@@ -62,7 +63,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
-import { getPageVideoList, getPageNewsList, findLiveRoomListByid } from '@/api'
+import { getPageVideoList, getPageNewsList, findLiveRoomListByid, getProductList, documentList } from '@/api'
 export default {
   name: 'show',
   data () {
@@ -124,19 +125,19 @@ export default {
           break
         case '直播':
           data.type = 3
-          data.setName = 'list'
+          data.setName = 'liveList'
           // debugger
           this.setCompileList(data)
           break
         case '文档下载':
-          data.type = 3
-          data.setName = 'list'
+          data.type = 4
+          data.setName = 'documentList'
           // debugger
           this.setCompileList(data)
           break
         case '产品介绍':
-          data.type = 3
-          data.setName = 'list'
+          data.type = 5
+          data.setName = 'productList'
           // debugger
           this.setCompileList(data)
           break
@@ -147,34 +148,40 @@ export default {
       this.setIsMask(!this.isMask)
     },
     addItemFunc: function (item) {
-      let id = item.id
+      let id = item.id || item.roomId || item.productId
       let index = this.itemIdArr.indexOf(id)
-      let maxLength
+      let maxLength, message
       switch (this.isType) {
         case '企业动态':
           maxLength = 5
+          message = `最多显示${maxLength}篇文章`
           break
         case '精彩视频':
           maxLength = 4
+          message = `最多显示${maxLength}个视频`
           break
         case '直播':
           maxLength = 1
+          message = `最多显示${maxLength}个直播`
           break
         case '文档下载':
           maxLength = 4
+          message = `前端显示数量不得超过${maxLength}个`
           break
         case '产品介绍':
           maxLength = 6
+          message = `前端显示数量不得超过${maxLength}个`
           break
         default:
           break
       }
       if (index === -1) {
         // 不存在,则添加
+        // debugger
         if (this.itemIdArr.length === maxLength) {
           this.$message({
             showClose: true,
-            message: '最多显示5篇文章'
+            message: message
           })
           item.isChecked = false
         } else {
@@ -189,49 +196,41 @@ export default {
       console.log(this.itemIdArr)
     },
     load () {
-      switch (this.isType) {
-        case '企业图片':
-          break
-        case '企业动态':
-          this.getMessage(getPageNewsList, 'dynamicList')
-          break
-        case '精彩视频':
-          this.getMessage(getPageVideoList, 'videoList')
-          break
-        case '直播':
-          this.getMessage(findLiveRoomListByid, 'liveList')
-          // axios.get('/api//Homepage/getPageVideoList', {
-          //   params: { 'key': 'value' }
-          // }).then(function (response) {
-          //   alert(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config))
-          // }).catch(function (error) {
-          //   alert(error)
-          // })
-          // axios.get('/live//Homepage/getPageVideoList', {
-          //   params: { 'key': 'value' }
-          // }).then(function (response) {
-          //   alert(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config))
-          // }).catch(function (error) {
-          //   alert(error)
-          // })
-          break
-        case '文档下载':
-          break
-        case '产品介绍':
-          break
-        default:
-          break
-      }
-    },
-    getMessage: function (axiosName, arrName) {
-      // 第一个参数为接口名，第二个参数为需要被遍历被选中的数组名
-      // debugger
-      alert(arrName)
       let data = {
         page: this.page,
         page_size: this.page_size,
         member_id: this.member_id
       }
+      switch (this.isType) {
+        case '企业图片':
+          break
+        case '企业动态':
+          this.getMessage(getPageNewsList, data, 'dynamicList')
+          break
+        case '精彩视频':
+          this.getMessage(getPageVideoList, data, 'videoList')
+          break
+        case '直播':
+          data = { account: 'P14cd2a1d17fc7d011d67809d4c756153' }
+          this.getMessage(findLiveRoomListByid, data, 'liveList')
+          break
+        case '文档下载':
+          // https://wenku.ofweek.com/api/ofweek_mp.php?
+          data = { username: 'Pa8db91c3faca302fcd9d854891542cf9' }
+          this.getMessage(documentList, data, 'documentList')
+          break
+        case '产品介绍':
+          data = { account: 'P14cd2a1d17fc7d011d67809d4c756153' }
+          this.getMessage(getProductList, data, 'productList')
+          break
+        default:
+          break
+      }
+    },
+    getMessage: function (axiosName, obj, arrName) {
+      // 第一个参数为接口名，第二个参数为需要被遍历被选中的数组名
+      // debugger
+
       let objData
       this.compileList.forEach(item => {
         if (arrName in item) {
@@ -242,14 +241,22 @@ export default {
 
       return new Promise((resolve, reject) => {
         this.page++
-        axiosName(data)
+        // debugger
+        axiosName(obj)
           .then((res) => {
-            if (res.status === 200) {
-              if (res.data.list.length > 0) {
+            let obj
+            if (arrName === 'liveList' || arrName === 'productList') {
+              obj = res.data
+            } else if (arrName === 'documentList') {
+              obj = res
+            } else {
+              obj = res.data.list
+            }
+            if ((Array.isArray(res)) || res.status === 200 || res.code === 0) {
+              if (obj.length > 0) {
                 // 遍历修改数据格式然后插入
                 // 找出需要遍历对象
-
-                res.data.list.forEach((item, index) => {
+                obj.forEach((item, index) => {
                   // 获取当前id
                   let id = item.id
                   // 找出当前比对的板块
@@ -281,7 +288,7 @@ export default {
                   message: '已加载全部'
                 })
               }
-              // this.itemModule = this.itemModule.concat(this.deepClone(res.data.list))
+              // this.itemModule = this.itemModule.concat(this.deepClone(obj))
             } else {
               this.$message({
                 showClose: true,

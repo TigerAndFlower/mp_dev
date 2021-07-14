@@ -6,7 +6,8 @@
       <template v-for="(item,index) in compileList">
         <div class="box "
              :class="{borDE: item.type == 1}"
-             :key="index">
+             :key="index"
+             v-if="isShow">
           <div class="setBox">
             <p>{{item.name}}</p>
             <i :class="index === 0?'go_top_on':'go_top'"
@@ -157,8 +158,9 @@
             </div>
             <div class="live wrap borDE">
               <div class="left">
+                <!-- logoUrl  name -->
                 <div class="liveBg">
-                  <img src="../../assets/images/live_bg.png"
+                  <img :src="item.liveList.length > 0 && item.liveList[0].coverUrl"
                        alt=""
                        class="liveImg">
                 </div>
@@ -167,15 +169,15 @@
                 <h4>直播标题</h4>
                 <p>
                   <span>直播时间：</span>
-                  <span class="c">ss-ss-ss</span>
+                  <span class="c">{{item.liveList.length > 0 ?  (formatDate(item.liveList[0].startTime)) +'-'+  (formatDate(item.liveList[0].endTime)) : ''}}</span>
                 </p>
                 <p>
                   <span>举办单位：</span>
-                  <span class="c">ss-ss-ss</span>
+                  <span class="c">{{item.liveList.length > 0 ? item.liveList[0].company : ''}}</span>
                 </p>
                 <p>
                   <span>直播简介：</span>
-                  <span class="c">我家門前有兩棵樹，一顆是棗樹，另一顆也是棗樹</span>
+                  <span class="c">{{item.liveList.length > 0 ? item.liveList[0].description : ''}}</span>
                 </p>
               </div>
             </div>
@@ -197,15 +199,22 @@
             </div>
             <div class="downLoad wrap">
               <ul class="list">
-                <li>
-                  <img src="../../assets/images/icon/icon_pdf.png"
-                       alt=""
-                       class="iconPdf">
-                </li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
+                <template v-if="item.documentList.length > 0">
+                  <li class="on"
+                      v-for="(document) in item.documentList"
+                      :key="document.id">
+                    <p>{{document.title}}</p>
+                    <button>立即下载</button>
+                  </li>
+                </template>
+                <template v-else>
+                  <li v-for="(document) in 4"
+                      :key="document">
+                    <img src="../../assets/images/icon/icon_pdf.png"
+                         alt=""
+                         class="iconPdf">
+                  </li>
+                </template>
               </ul>
             </div>
           </template>
@@ -226,30 +235,24 @@
             </div>
             <div class="product wrap">
               <ul class="list">
-                <li>
-                  <img src="../../assets/images/icon/icon_img.png"
-                       alt=""
-                       class="liImg">
-                  <p class="ellipsis">产品标题</p>
-                </li>
-                <li>
-                  <img src="../../assets/images/icon/icon_img.png"
-                       alt=""
-                       class="liImg">
-                  <p class="ellipsis">产品标题</p>
-                </li>
-                <li>
-                  <img src="../../assets/images/icon/icon_img.png"
-                       alt=""
-                       class="liImg">
-                  <p class="ellipsis">产品标题</p>
-                </li>
-                <li>
-                  <img src="../../assets/images/icon/icon_img.png"
-                       alt=""
-                       class="liImg">
-                  <p class="ellipsis">产品标题</p>
-                </li>
+                <template v-if="item.productList.length > 0">
+                  <li v-for="product in item.productList"
+                      :key="product.productId">
+                    <img :src="product.imageUrl"
+                         alt=""
+                         class="liImg">
+                    <p class="ellipsis">{{product.productName}}</p>
+                  </li>
+                </template>
+                <template v-else>
+                  <li v-for="product in 6"
+                      :key="product">
+                    <img src="../../assets/images/icon/icon_img.png"
+                         alt=""
+                         class="liImg">
+                    <p class="ellipsis">产品标题</p>
+                  </li>
+                </template>
               </ul>
             </div>
           </template>
@@ -289,26 +292,69 @@ export default {
   },
   methods: {
     ...mapMutations(['setCompileList', 'setIsMask']),
-    // upDom: function () {
-    //   this.isShow = false
-    //   setTimeout(() => {
-    //     this.$nextTick(() => {
-    //       this.isShow = true
-    //     })
-    //   }, 0)
-    // },
+    upDom: function () {
+      this.isShow = false
+      setTimeout(() => {
+        this.$nextTick(() => {
+          this.isShow = true
+        })
+      }, 0)
+    },
     addElementFunc: function (type, index) {
       this.isType = type
       this.ind = index
       this.setIsMask(!this.isMask)
     },
+    toSite: function (i, type) {
+      let index
+      let arr = this.compileList
+      if (type === 'close') {
+        arr.splice(i, 1)
+        console.log(arr)
+        let typeData = {
+          type: 'all',
+          arr: this.deepClone(arr)
+        }
+        this.setCompileList(typeData)
+      } else {
+        if (type === 'left') {
+          index = i - 1
+          if (i === 0) {
+            this.$message({
+              showClose: true,
+              message: '已经是第一个了'
+            })
+            return false
+          }
+        } else if (type === 'right') {
+          index = i + 1
+          if (i === this.compileList.length - 1) {
+            this.$message({
+              showClose: true,
+              message: '已经是最后一个了'
+            })
+            return false
+          }
+        }
+        var tmp = arr[index]
+        arr[index] = arr[i]
+        arr[i] = tmp
+        let typeData = {
+          type: 'all',
+          arr: this.deepClone(arr)
+        }
+        this.setCompileList(typeData)
+        // this.$forceUpdate()
+      }
+    },
     goTop: function (i) {
-      if (i === 0) return false
-      console.log(i)
+      this.toSite(i, 'left')
     },
     goBottom: function (i) {
-      if (i === (this.compileList.length - 1)) return false
-      console.log(i)
+      this.toSite(i, 'right')
+    },
+    close: function (i) {
+      this.toSite(i, 'close')
     }
   },
   components: { maskPop },
@@ -408,14 +454,16 @@ export default {
             border-top: 1px solid #D1D1D1
           .liImg
             position: absolute
-            top: 40%
+            top: 39%
             left: 50%
             transform: translate(-50%,-50%)
+            max-height: 210px
+            max-width: 100%
     .downLoad
       ul
         width: 100%
         display: flex
-        justify-content: space-between
+        justify-content: start
         flex-wrap: wrap
         li
           position: relative
@@ -423,7 +471,32 @@ export default {
           height: 130px
           background: #F9F9F9
           border: 1px solid #D1D1D1
-          margin-bottom: 20px
+          margin: 20px 10px
+          &.on
+            background: url('../../assets/images/icon/icon_downLoad.png') center left #F9F9F9
+            background-size: 100% 100%
+            border: 0px
+            p
+              font-size: 14px
+              font-weight: 400
+              color: #333333
+              line-height: 18px
+              padding: 20px 20px 0 60px
+            button
+              position: absolute
+              bottom: 10px
+              right: 15px
+              width: 74px
+              height: 32px
+              background: linear-gradient(0deg, #1FB5F3, #1292EB)
+              border-radius: 2px
+              font-size: 14px
+              font-weight: 400
+              color: #F9F9F9
+              line-height: 32px
+              text-align: center
+          &:first-of-type
+            margin-left: 0
           .iconPdf
             position: absolute
             top: 50%
@@ -440,6 +513,8 @@ export default {
           top: 50%
           left: 50%
           transform: translate(-50%,-50%)
+          width: 100%
+          height: 100%
       .right
         width: 420px
         box-sizing: border-box
