@@ -28,7 +28,8 @@
               <td width="215"
                   v-show="tableImgName"
                   v-html="tableImgName"></td>
-              <td v-html="tableName"></td>
+              <td width="500"
+                  v-html="tableName"></td>
             </tr>
           </thead>
           <tbody>
@@ -42,7 +43,7 @@
               </td>
               <td class="infinite-list-item"
                   v-show="isType === '精彩视频' || isType === '直播'">
-                <img src="../../assets/images/compileRightList02.png"
+                <img :src="'http://mp.ofweek.com'+item.images"
                      alt="">
               </td>
               <td class="infinite-list-item">
@@ -61,7 +62,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
-import { getPageVideoList, getPageNewsList } from '@/api'
+import { getPageVideoList, getPageNewsList, findLiveRoomListByid } from '@/api'
 export default {
   name: 'show',
   data () {
@@ -71,8 +72,8 @@ export default {
       tableImgName: '',
       tips: '',
       page: 1,
-      page_size: 20,
-      member_id: 1151, // 视频最多 864  文章最多 1151
+      page_size: 15,
+      member_id: 864, // 视频最多 864  文章最多 1151
       itemModule: [],
       itemArr: [],
       itemIdArr: []
@@ -105,52 +106,72 @@ export default {
       this.tableImgName = imgName
     },
     subList: function (item) {
+      let data = { arr: this.deepClone(this.itemArr) }
       switch (this.isType) {
         case '企业图片':
-          this.setMaskText('备注：建议图片尺寸444 * 320px，图片格式支持jpg、png图片数量不超过3张')
           break
         case '企业动态':
-          let data = {
-            type: 2,
-            setName: 'dynamicList',
-            arr: this.deepClone(this.itemArr)
-          }
-          // this.compileList[this.ind].dynamicList = this.itemArr
+          data.type = 2
+          data.setName = 'dynamicList'
+          // debugger
           this.setCompileList(data)
-
           break
         case '精彩视频':
-          this.itemArr = this.compileList[this.ind].videoList
-
+          data.type = 2
+          data.setName = 'videoList'
+          // debugger
+          this.setCompileList(data)
           break
         case '直播':
-          this.itemArr = this.compileList[this.ind].list
-
+          data.type = 3
+          data.setName = 'list'
+          // debugger
+          this.setCompileList(data)
           break
         case '文档下载':
-          this.itemArr = this.compileList[this.ind].list
-
+          data.type = 3
+          data.setName = 'list'
+          // debugger
+          this.setCompileList(data)
           break
         case '产品介绍':
-          this.itemArr = this.compileList[this.ind].list
-
+          data.type = 3
+          data.setName = 'list'
+          // debugger
+          this.setCompileList(data)
           break
         default:
           break
       }
       // this.$parent.upDom()
       this.setIsMask(!this.isMask)
-      // vuex解构太复杂   没有渲染视图
-      // setTimeout(() => {
-      //   this.$forceUpdate()
-      // }, 1000)
     },
     addItemFunc: function (item) {
       let id = item.id
       let index = this.itemIdArr.indexOf(id)
+      let maxLength
+      switch (this.isType) {
+        case '企业动态':
+          maxLength = 5
+          break
+        case '精彩视频':
+          maxLength = 4
+          break
+        case '直播':
+          maxLength = 1
+          break
+        case '文档下载':
+          maxLength = 4
+          break
+        case '产品介绍':
+          maxLength = 6
+          break
+        default:
+          break
+      }
       if (index === -1) {
         // 不存在,则添加
-        if (this.itemIdArr.length === 5) {
+        if (this.itemIdArr.length === maxLength) {
           this.$message({
             showClose: true,
             message: '最多显示5篇文章'
@@ -175,9 +196,24 @@ export default {
           this.getMessage(getPageNewsList, 'dynamicList')
           break
         case '精彩视频':
-          this.getMessage(getPageVideoList)
+          this.getMessage(getPageVideoList, 'videoList')
           break
         case '直播':
+          this.getMessage(findLiveRoomListByid, 'liveList')
+          axios.get('/api//Homepage/getPageVideoList', {
+            params: { 'key': 'value' }
+          }).then(function (response) {
+            alert(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config))
+          }).catch(function (error) {
+            alert(error)
+          })
+          axios.get('/live//Homepage/getPageVideoList', {
+            params: { 'key': 'value' }
+          }).then(function (response) {
+            alert(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config))
+          }).catch(function (error) {
+            alert(error)
+          })
           break
         case '文档下载':
           break
@@ -189,6 +225,8 @@ export default {
     },
     getMessage: function (axiosName, arrName) {
       // 第一个参数为接口名，第二个参数为需要被遍历被选中的数组名
+      // debugger
+      alert(arrName)
       let data = {
         page: this.page,
         page_size: this.page_size,
@@ -219,6 +257,10 @@ export default {
                     for (let i = 0; i < objData.length; i++) {
                       if (objData[i].id === id) {
                         item.isChecked = true
+                        console.log(that.itemArr)
+                        console.log(that.itemIdArr)
+                        console.log(objData[i].id)
+                        // debugger
                         that.itemArr.push(objData[i])
                         that.itemIdArr.push(objData[i].id)
                         break
@@ -226,6 +268,7 @@ export default {
                         item.isChecked = false
                       }
                     }
+                    // debugger
                     this.itemModule.push(item)
                   } else {
                     item.isChecked = false
@@ -256,28 +299,24 @@ export default {
     }
   },
   mounted () {
+    // debugger
     switch (this.isType) {
       case '企业图片':
         this.setMaskText('备注：建议图片尺寸444 * 320px，图片格式支持jpg、png图片数量不超过3张')
         break
       case '企业动态':
-        this.itemArr = this.deepClone(this.compileList[this.ind].dynamicList)
         this.setMaskText('备注：最多只能添加5篇文章', '文章标题')
         break
       case '精彩视频':
-        this.itemArr = this.deepClone(this.compileList[this.ind].videoList)
         this.setMaskText('备注：最多只能添加4个视频', '视频标题', '封面图')
         break
       case '直播':
-        this.itemArr = this.deepClone(this.compileList[this.ind].list)
         this.setMaskText('备注：最多只能添加1个直播', '活动名称', '封面图')
         break
       case '文档下载':
-        this.itemArr = this.deepClone(this.compileList[this.ind].list)
         this.setMaskText('备注：最多只能添加4个文档', '文档标题')
         break
       case '产品介绍':
-        this.itemArr = this.deepClone(this.compileList[this.ind].list)
         this.setMaskText('备注：最多只能添加6个产品', '产品标题', '产品图')
         break
       default:
@@ -353,4 +392,8 @@ export default {
           border: 1px solid #CCCCCC
           &:last-of-type
             text-align: left
+          img
+            display: block
+            width: 140px
+            margin: 0 auto
 </style>

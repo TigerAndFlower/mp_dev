@@ -11,18 +11,25 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/api': {                       //需要代理的接口
-        target: 'http://mp.ofweek.com', //目标服务器
-        changeOrigin: true,　　　　　　 //是否跨域
+      '/api': {
+        target: 'http://mp.ofweek.com',
+        changeOrigin: true,
         pathRewrite: {
-          '^/api': ''             //重定向
+          '^/api': ''
         }
       },
-      '/wenku': {                       //需要代理的接口
-        target: '//wenku.ofweek.com/api/ofweek_mp.php', //目标服务器
-        changeOrigin: true,　　　　　　 //是否跨域
+      '/live': {
+        target: 'http://live.ofweek.com/api',
+        changeOrigin: true,
         pathRewrite: {
-          '^/wenku': ''             //重定向
+          '^/live': ''
+        }
+      },
+      '/wenku': {
+        target: '//wenku.ofweek.com/api/ofweek_mp',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/wenku': ''
         }
       }
     },

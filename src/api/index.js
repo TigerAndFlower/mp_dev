@@ -1,12 +1,9 @@
 import requests from '@/api/request'
-// 文章最多 1151
-
-// 视频最多 864
 // 直播列表
-export function getPageLiveRoomsList (data) {
+export function findLiveRoomListByid (data) {
   return requests({
-    url: '/Homepage/getPageLiveRoomsList',
-    method: 'post',
+    url: '/room/findLiveRoomListByid',
+    method: 'get',
     data
   })
 }

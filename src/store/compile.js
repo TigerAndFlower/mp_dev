@@ -21,7 +21,7 @@ const state = {
     {
       type: 3,
       name: '直播',
-      list: [],
+      liveList: [],
       liveImg: '',
       title: '',
       time: '',
@@ -31,12 +31,12 @@ const state = {
     {
       type: 4,
       name: '文档下载',
-      list: []
+      documentList: []
     },
     {
       type: 5,
       name: '产品介绍',
-      list: []
+      productList: []
     }
   ],
   indexList: [1, 2, 3, 4, 5],
@@ -51,6 +51,9 @@ const mutations = {
       if (item.type === type) {
         for (var p in item) {
           if (p === setName) {
+            console.log(arr)
+            console.log(state.compileList[index][setName])
+            debugger
             state.compileList[index][setName] = arr
             return
           }

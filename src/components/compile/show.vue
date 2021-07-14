@@ -107,46 +107,33 @@
                   <h4>精彩视频</h4>
                 </div>
                 <ul class="videoList">
-                  <li>
-                    <div class="videoWrap">
-                      <img src=""
-                           alt="">
-                      <img src="../../assets/images/icon/icon_play.png"
-                           alt=""
-                           class="icon_play">
-                    </div>
-                    <p>视频标题</p>
-                  </li>
-                  <li>
-                    <div class="videoWrap">
-                      <img src=""
-                           alt="">
-                      <img src="../../assets/images/icon/icon_play.png"
-                           alt=""
-                           class="icon_play">
-                    </div>
-                    <p>视频标题</p>
-                  </li>
-                  <li>
-                    <div class="videoWrap">
-                      <img src=""
-                           alt="">
-                      <img src="../../assets/images/icon/icon_play.png"
-                           alt=""
-                           class="icon_play">
-                    </div>
-                    <p class="ellipsis">视频标题</p>
-                  </li>
-                  <li>
-                    <div class="videoWrap">
-                      <img src=""
-                           alt="">
-                      <img src="../../assets/images/icon/icon_play.png"
-                           alt=""
-                           class="icon_play">
-                    </div>
-                    <p class="ellipsis">视频标题</p>
-                  </li>
+                  <template v-if="item.videoList.length === 0">
+                    <li v-for="video in 4"
+                        :key="video">
+                      <div class="videoWrap">
+                        <img src=""
+                             alt="">
+                        <img src="../../assets/images/icon/icon_play.png"
+                             alt=""
+                             class="icon_play">
+                      </div>
+                      <p>视频标题</p>
+                    </li>
+                  </template>
+                  <template v-else>
+                    <li v-for="(video,videoIndex) in item.videoList"
+                        :key="videoIndex">
+                      <div class="videoWrap">
+                        <img :src="'http://mp.ofweek.com'+video.images"
+                             alt=""
+                             class="bgImg">
+                        <img src="../../assets/images/icon/icon_play.png"
+                             alt=""
+                             class="icon_play">
+                      </div>
+                      <p class="ellipsis">{{video.title}}</p>
+                    </li>
+                  </template>
                 </ul>
               </div>
             </div>
@@ -276,10 +263,10 @@
       </div>
     </div>
     <!-- 弹窗 -->
-    <maskPop :isType="isType"
+    <maskPop v-if="isMask"
+             :isType="isType"
              :ind="ind"
-             :key="isType"
-             v-if="isMask" />
+             :key="isType" />
   </div>
 </template>
 
@@ -488,12 +475,17 @@ export default {
             width: 195px
             height: 115px
             background: #F0F0F0
+            .bgImg
+              display: block
+              width: 100%
+              height: 100%
             .icon_play
               position: absolute
               top: 50%
               left: 50%
               transform: translate(-50%,-50%)
           p
+            width: 195px
             font-size: 14px
             font-family: Microsoft YaHei
             font-weight: 400
