@@ -34,7 +34,6 @@ const state = {
       productList: []
     }
   ],
-  indexList: [1, 2, 3, 4, 5],
   isMask: false
 
 }
@@ -45,6 +44,8 @@ const mutations = {
     // debugger
     if (type === 'all') {
       state.compileList = arr
+    } else if (type === 'item') {
+      state.compileList.push(arr)
     } else {
       state.compileList.forEach((item, index) => {
         if (item.type === type) {

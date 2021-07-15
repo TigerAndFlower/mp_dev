@@ -36,30 +36,55 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   name: 'show',
   data () {
     return {
       isShow: false,
       lists: [
-        { type: 1, img: require('../../assets/images/compileRightList01.png'), isShow: false },
-        { type: 2, img: require('../../assets/images/compileRightList02.png'), isShow: false },
-        { type: 3, img: require('../../assets/images/compileRightList03.png'), isShow: false },
-        { type: 4, img: require('../../assets/images/compileRightList04.png'), isShow: false },
-        { type: 5, img: require('../../assets/images/compileRightList05.png'), isShow: false }
-      ]
+        { type: 1, img: require('../../assets/images/compileRightList01.png') },
+        { type: 2, img: require('../../assets/images/compileRightList02.png') },
+        { type: 3, img: require('../../assets/images/compileRightList03.png') },
+        { type: 4, img: require('../../assets/images/compileRightList04.png') },
+        { type: 5, img: require('../../assets/images/compileRightList05.png') }
+      ],
+      staging: []
     }
   },
+  computed: {
+    ...mapGetters(['compileList'])
+  },
   methods: {
+    ...mapMutations(['setCompileList']),
     isShowClick () {
       this.isShow = !this.isShow
     },
-
     addItemFunc (index) {
-      //
-      this.lists[index].isShow = !this.lists[index].isShow
-      console.log(this.lists)
+      if (this.staging.length === this.compileList.length) return false
+      let type = this.lists[index].type
+      let obj = this.staging[index]
+      let flag = true
+      for (let i = 0; i < this.compileList.length; i++) {
+        let item = this.compileList[i]
+        if (item.type === type) {
+          flag = false
+          break
+        } else {
+          flag = true
+        }
+      }
+      if (flag) {
+        let data = {
+          type: 'item',
+          arr: obj
+        }
+        this.setCompileList(data)
+      }
     }
+  },
+  mounted () {
+    this.staging = this.deepClone(this.compileList)
   }
 }
 </script>

@@ -433,7 +433,7 @@ export default {
       ul
         width: 100%
         display: flex
-        justify-content: space-between
+        justify-content: start
         flex-wrap: wrap
         li
           position: relative
@@ -442,6 +442,11 @@ export default {
           border: 1px solid #D1D1D1
           margin-bottom: 20px
           background: #F9F9F9
+          margin-left: 30px
+          &:nth-of-type(1)
+            margin-left: 0px
+          &:nth-of-type(4)
+            margin-left: 0px
           p
             position: absolute
             bottom: 0%
