@@ -260,7 +260,8 @@
       </template>
       <div class="box">
         <el-row>
-          <el-button type="primary">提交</el-button>
+          <el-button type="primary"
+                     @click="submit">提交</el-button>
           <el-button>预览</el-button>
         </el-row>
       </div>
@@ -275,6 +276,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+import { saveHomePage, getHomePage } from '@/api'
 import maskPop from './maskPop'
 export default {
   name: 'show',
@@ -287,11 +289,46 @@ export default {
     }
   },
   mounted () {
-    // this.deepClone(this.compileList)
-    // 上移
+    // http://mp.ofweek.com/Homepage/getHomePage?member_id=1151
+    // 上移\
+    let data = {
+      member_id: this.$getMemberId
+    }
+    getHomePage(data)
+      .then((res) => {
+        if (res.status === 200) {
+          let arr = JSON.parse(res.data)
+          let typeData = {
+            type: 'all',
+            arr: this.deepClone(arr)
+          }
+          this.setCompileList(typeData)
+        }
+      })
   },
   methods: {
     ...mapMutations(['setCompileList', 'setIsMask']),
+    submit () {
+      let data = {
+        member_id: this.$getMemberId,
+        compileList: JSON.stringify(this.compileList)
+      }
+      saveHomePage(data)
+        .then((res) => {
+          if (res.status === 200) {
+            this.$message({
+              showClose: true,
+              message: '提交成功',
+              type: 'success'
+            })
+          } else {
+            this.$message.error(res.info)
+          }
+        })
+        .catch((err) => {
+          this.$message.error(err.info)
+        })
+    },
     upDom: function () {
       this.isShow = false
       setTimeout(() => {

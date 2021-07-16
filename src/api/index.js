@@ -2,6 +2,7 @@ import obj from '@/api/request'
 let requests = obj.requests
 let requestsLive = obj.requestsLive
 let requestswenku = obj.requestswenku
+
 // 文库
 export function documentList (params) {
   return requestswenku({
@@ -26,6 +27,7 @@ export function findLiveRoomListByid (params) {
     params
   })
 }
+
 // 视频列表
 export function getPageVideoList (data) {
   return requests({
@@ -38,6 +40,30 @@ export function getPageVideoList (data) {
 export function getPageNewsList (data) {
   return requests({
     url: '/Homepage/getPageNewsList',
+    method: 'post',
+    data
+  })
+}
+// 提交编辑页面
+export function saveHomePage (data) {
+  return requests({
+    url: '/Homepage/saveHomePage',
+    method: 'post',
+    data
+  })
+}
+// 获取编辑数据
+export function getHomePage (params) {
+  return requests({
+    url: '/Homepage/getHomePage',
+    method: 'get',
+    params
+  })
+}
+// 提交编辑页面
+export function upload (data) {
+  return requests({
+    url: '/home/news/ajax_upload_img',
     method: 'post',
     data
   })

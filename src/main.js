@@ -7,7 +7,7 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import { deepClone, getQueryString, formatDate } from './assets/js/common'
+import { deepClone, getQueryString, formatDate, getID } from './assets/js/common'
 
 import './assets/css/base.css'
 /* 清除默认样式 */
@@ -18,6 +18,9 @@ Vue.use(Vuex)
 Vue.prototype.deepClone = deepClone
 Vue.prototype.getQueryString = getQueryString
 Vue.prototype.formatDate = formatDate
+Vue.prototype.$getMemberId = getID('id')
+Vue.prototype.$getAccount = getID('account')
+Vue.prototype.$getUsername = getID('username')
 // 注册时间格式过滤器
 /* eslint-disable no-new */
 new Vue({

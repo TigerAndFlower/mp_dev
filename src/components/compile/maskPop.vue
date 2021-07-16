@@ -5,17 +5,36 @@
       <img src="../../assets/images/icon/icon_close.png"
            class="close"
            @click="isMaskFunc">
-      <h4 class="title">{{isType}}</h4>
-      <p class="tips">{{tips}}</p>
+      <h4 class="title"
+          v-html="isType"></h4>
+      <p class="tips"
+         v-html="tips"></p>
       <!-- 数据内容 -->
       <div class="wrap">
         <div class="upImgWrap"
              v-if="isType === '企业图片'">
-          111
+          <!-- 上传图片 -->
+          <div class="upImgView">
+            <span><i>*</i>上传图片:</span>
+            <ul v-for="(item,index) in upImgList"
+                :key="index">
+              <li @click="upImgFunc(index)">
+                <!-- <i class="closeImg"
+                   @click="closeImg(index)"></i> -->
+              </li>
+            </ul>
+            <upload></upload>
+          </div>
+          <div class="upImgView">
+            <span>跳转链接:</span>
+            <input type="text"
+                   v-model="itemModule.target_link">
+          </div>
         </div>
         <table v-else
                class="infinite-list"
                v-infinite-scroll="load"
+               infinite-scroll-disabled="disabled"
                style="overflow:auto"
                width="780"
                border="0"
@@ -51,6 +70,14 @@
                 {{isType === '产品介绍'?item.productName:(isType === '直播'?item.name:item.title)}}
               </td>
             </tr>
+            <tr>
+              <td style="border: 0px"></td>
+              <td style="border: 0px;text-align: center"
+                  :colspan="2">
+                <p v-if="loading">加载中...</p>
+                <p v-if="noMore">没有更多了</p>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -64,6 +91,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import { getPageVideoList, getPageNewsList, findLiveRoomListByid, getProductList, documentList } from '@/api'
+import upload from '../../components/compile/upload.vue'
 export default {
   name: 'show',
   data () {
@@ -74,10 +102,12 @@ export default {
       tips: '',
       page: 1,
       page_size: 15,
-      member_id: 864, // 视频最多 864  文章最多 1151
       itemModule: [],
       itemArr: [],
-      itemIdArr: []
+      itemIdArr: [],
+      loading: false,
+      noMoreStart: true,
+      upImgList: []
     }
   },
   props: {
@@ -92,9 +122,17 @@ export default {
       default: () => true
     }
   },
+  components: {
+    'upload': upload
+  },
   computed: {
-    ...mapGetters(['isMask', 'compileList'])
-
+    ...mapGetters(['isMask', 'compileList']),
+    noMore () {
+      return !this.noMoreStart
+    },
+    disabled () {
+      return this.loading || this.noMore
+    }
   },
   methods: {
     ...mapMutations(['setIsMask', 'setCompileList']),
@@ -196,31 +234,36 @@ export default {
       console.log(this.itemIdArr)
     },
     load () {
+      this.loading = true
       let data = {
         page: this.page,
         page_size: this.page_size,
-        member_id: this.member_id
+        member_id: this.$getMemberId
       }
+      console.log('load')
       switch (this.isType) {
-        case '企业图片':
-          break
         case '企业动态':
+          this.setMaskText('备注：最多只能添加5篇文章', '文章标题')
           this.getMessage(getPageNewsList, data, 'dynamicList')
           break
         case '精彩视频':
+          this.setMaskText('备注：最多只能添加4个视频', '视频标题', '封面图')
           this.getMessage(getPageVideoList, data, 'videoList')
           break
         case '直播':
-          data = { account: 'P14cd2a1d17fc7d011d67809d4c756153' }
+          this.setMaskText('备注：最多只能添加1个直播', '活动名称', '封面图')
+          data = { account: this.$getAccount }
           this.getMessage(findLiveRoomListByid, data, 'liveList')
           break
         case '文档下载':
+          this.setMaskText('备注：最多只能添加4个文档', '文档标题')
           // https://wenku.ofweek.com/api/ofweek_mp.php?
-          data = { username: 'Pa8db91c3faca302fcd9d854891542cf9' }
+          data = { username: this.$getUsername }
           this.getMessage(documentList, data, 'documentList')
           break
         case '产品介绍':
-          data = { account: 'P14cd2a1d17fc7d011d67809d4c756153' }
+          this.setMaskText('备注：最多只能添加6个产品', '产品标题', '产品图')
+          data = { account: this.$getAccount }
           this.getMessage(getProductList, data, 'productList')
           break
         default:
@@ -254,6 +297,7 @@ export default {
             }
             if ((Array.isArray(res)) || res.status === 200 || res.code === 0) {
               if (obj.length > 0) {
+                this.loading = false
                 // 遍历修改数据格式然后插入
                 // 找出需要遍历对象
                 obj.forEach((item, index) => {
@@ -264,9 +308,9 @@ export default {
                     for (let i = 0; i < objData.length; i++) {
                       if (objData[i].id === id) {
                         item.isChecked = true
-                        console.log(that.itemArr)
-                        console.log(that.itemIdArr)
-                        console.log(objData[i].id)
+                        // console.log(that.itemArr)
+                        // console.log(that.itemIdArr)
+                        // console.log(objData[i].id)
                         // debugger
                         that.itemArr.push(objData[i])
                         that.itemIdArr.push(objData[i].id)
@@ -283,6 +327,8 @@ export default {
                   }
                 })
               } else {
+                this.count = false
+                this.loading = false
                 this.$message({
                   showClose: true,
                   message: '已加载全部'
@@ -290,6 +336,8 @@ export default {
               }
               // this.itemModule = this.itemModule.concat(this.deepClone(obj))
             } else {
+              this.noMoreStart = false
+              this.loading = false
               this.$message({
                 showClose: true,
                 message: '已加载全部'
@@ -297,40 +345,36 @@ export default {
             }
           })
           .catch(() => {
+            this.noMoreStart = false
+            this.loading = false
             this.$message({
               showClose: true,
               message: '已加载全部'
             })
           })
       })
+    },
+    upImgFunc (index) {
+      // 上传图片
+
+    },
+    getUploadImg () {
+      // 上传图片
+
     }
   },
   mounted () {
     // debugger
-    switch (this.isType) {
-      case '企业图片':
-        this.setMaskText('备注：建议图片尺寸444 * 320px，图片格式支持jpg、png图片数量不超过3张')
-        break
-      case '企业动态':
-        this.setMaskText('备注：最多只能添加5篇文章', '文章标题')
-        break
-      case '精彩视频':
-        this.setMaskText('备注：最多只能添加4个视频', '视频标题', '封面图')
-        break
-      case '直播':
-        this.setMaskText('备注：最多只能添加1个直播', '活动名称', '封面图')
-        break
-      case '文档下载':
-        this.setMaskText('备注：最多只能添加4个文档', '文档标题')
-        break
-      case '产品介绍':
-        this.setMaskText('备注：最多只能添加6个产品', '产品标题', '产品图')
-        break
-      default:
-        break
+    if (this.isType === '企业图片') {
+      this.setMaskText('备注：建议图片尺寸444 * 320px，图片格式支持jpg、png。图片数量不超过3张')
+      // 获取全局的上传的图片
+      this.compileList.forEach(item => {
+        if (item.type === 1) {
+          this.upImgList = item.imgList.length > 0 ? this.deepClone(item.imgList) : ['']
+        }
+      })
     }
   }
-
 }
 </script>
 
@@ -380,6 +424,46 @@ export default {
     width: 100%
     height: 530px
     overflow: auto
+    .upImgWrap
+      width: 100%
+      .upImgView
+        span
+          display: inline-block
+          width: 80px
+          margin-right: 20px
+          text-align: right
+          font-size: 14px
+          color: #808080
+          line-height: 40px
+          vertical-align: top
+          i
+            color: #FF1919
+        ul
+          display: inline-block
+          margin-bottom: 40px
+          width: 680px
+          li
+            position: relative
+            width: 200px
+            height: 144px
+            background: #F0F0F0
+            border: 1px solid #CCCCCC
+            background: url(../../assets/images/icon/icon_upImg.png) no-repeat center
+            background-size: 100%,100%
+            border-radius: 2px
+            margin-right: 20px
+            .closeImg
+              position: absolute
+              right: 10px
+              top: 10px
+              width: 12px
+              height: 15px
+              background: url(../../assets/images/icon/icon_recycle.png) no-repeat center
+        input
+          width: 500px
+          height: 36px
+          background: #FCFCFC
+          border: 1px solid #CCCCCC
     table
       text-align: center
       thead

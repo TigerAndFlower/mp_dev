@@ -35,7 +35,6 @@ const state = {
     }
   ],
   isMask: false
-
 }
 
 const mutations = {
