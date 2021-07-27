@@ -5,9 +5,9 @@ const state = {
     {
       type: 1,
       name: '企业介绍',
-      interName: '我是谁',
+      interName: '',
       interText: '',
-      imgList: [],
+      imgList: [''],
       target_link: ''
     },
     // 企业动态
@@ -52,8 +52,11 @@ const mutations = {
             if (p === setName) {
               // console.log(arr)
               // console.log(state.compileList[index][setName])
-              // debugger
-              state.compileList[index][setName] = arr
+              if (type === 1) {
+                state.compileList[index] = arr
+              } else {
+                state.compileList[index][setName] = arr
+              }
               return
             }
           }
@@ -67,7 +70,6 @@ const mutations = {
 }
 const getters = {
   compileList: state => state.compileList,
-  indexList: state => state.indexList,
   isMask: state => state.isMask
 }
 export default {

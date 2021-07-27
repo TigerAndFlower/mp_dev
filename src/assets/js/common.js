@@ -33,7 +33,15 @@ export function getQueryString (name) {
     return null
   }
 }
-
+export function isJsonString (str) {
+  try {
+    if (typeof JSON.parse(str) === 'object') {
+      return true
+    }
+  } catch (e) {
+  }
+  return false
+}
 export function formatDate (value, format) {
   value = typeof value === 'string' ? value.replace(/-/g, '/') : value
   const d = new Date(value)
@@ -58,10 +66,13 @@ export function formatDate (value, format) {
 }
 export function getID (name) {
   if (name === 'id') {
-    return getQueryString('id') ? getQueryString('id') : 864
-  } else if (name === 'account') {
-    return getQueryString('account') ? getQueryString('account') : 'P14cd2a1d17fc7d011d67809d4c756153'
+    console.log(`id:${getQueryString('member_id')}`)
+    return getQueryString('member_id') ? getQueryString('member_id') : 864
   } else if (name === 'username') {
-    return getQueryString('username') ? getQueryString('username') : 'Pa8db91c3faca302fcd9d854891542cf9'
+    console.log(`username:${getQueryString('username')}`)
+    return getQueryString('username') ? getQueryString('username') : 'P14cd2a1d17fc7d011d67809d4c756153'
+  } else if (name === 'public_name') {
+    console.log(`public_name:${getQueryString('public_name')}`)
+    return getQueryString('public_name')
   }
 }

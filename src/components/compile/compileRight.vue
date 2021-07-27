@@ -27,7 +27,8 @@
                class="imgWrap "
                @click="addItemFunc(index)">
             <img :src="item.img"
-                 alt="">
+                 alt=""
+                 :title="item.title">
           </div>
         </div>
       </div>
@@ -43,11 +44,11 @@ export default {
     return {
       isShow: false,
       lists: [
-        { type: 1, img: require('../../assets/images/compileRightList01.png') },
-        { type: 2, img: require('../../assets/images/compileRightList02.png') },
-        { type: 3, img: require('../../assets/images/compileRightList03.png') },
-        { type: 4, img: require('../../assets/images/compileRightList04.png') },
-        { type: 5, img: require('../../assets/images/compileRightList05.png') }
+        { type: 1, img: require('../../assets/images/compileRightList01.png'), title: '企业介绍' },
+        { type: 2, img: require('../../assets/images/compileRightList02.png'), title: '企业动态' },
+        { type: 3, img: require('../../assets/images/compileRightList03.png'), title: '直播' },
+        { type: 4, img: require('../../assets/images/compileRightList04.png'), title: '文档下载' },
+        { type: 5, img: require('../../assets/images/compileRightList05.png'), title: '产品介绍' }
       ],
       staging: []
     }

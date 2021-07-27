@@ -45,11 +45,10 @@
           </template>
           <template v-if="item.type== 2">
             <div class="dynamic wrap">
-
               <div class="left"
                    v-if="item.dynamicList.length > 0"
                    :style="{width: (item.videoList.length <= 0?'100%':'')}">
-
+                <!-- style="width: 100%" -->
                 <!-- 企业动态 -->
                 <div class="boxTitle">
                   <img src="../../assets/images/icon/icon_title1.png"
@@ -174,15 +173,36 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { getHomePage } from '@/api'
 export default {
-  name: 'preview',
+  name: 'complete',
   data () {
     return {
-      arrList: []
+      arrList: [],
+      imgList: []
     }
   },
   mounted () {
-    this.arrList = JSON.parse(window.localStorage.getItem('compileList'))
+    // http://mp.ofweek.com/Homepage/getHomePage?member_id=1151
+    // 上移\
+    let data = {
+      member_id: this.$getMemberId
+    }
+    getHomePage(data)
+      .then((res) => {
+        if (res.status === 200) {
+          let arr = JSON.parse(res.data)
+          this.arrList = this.deepClone(arr)
+          // 图片列表有一个空的用来做上传，渲染的时候需要去掉
+        }
+      })
+  },
+  methods: {
+
+  },
+  computed: {
+    ...mapGetters(['compileList'])
   }
 }
 </script>
@@ -192,7 +212,6 @@ export default {
 .main
   width: 1120px
   position: relative
-  margin: 0 auto
   .box
     position: relative
     width: 1120px

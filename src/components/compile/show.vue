@@ -14,7 +14,7 @@
                @click.stop="goTop(index)"></i>
             <i :class="index === (compileList.length - 1)?'go_bottom_on':'go_bottom'"
                @click.stop="goBottom(index)"></i>
-            <i class="close"
+            <i class="setClose"
                @click.stop="close(index)"></i>
           </div>
           <template v-if="item.type== 1">
@@ -41,22 +41,27 @@
               </div>
               <div class="right">
                 <!-- 图片 -->
-                <template v-if="imgList.length > 0">
-                  <div class="addElement"
-                       @click="addElementFunc('企业图片',index)">去添加</div>
+                <div class="addElement"
+                     @click="addElementFunc('企业图片',index)">去添加</div>
+                <!-- <template v-if="item.target_link"> -->
+                <!-- <a :href="item.target_link"
+                     target="_blank"> -->
+
+                <template>
+                  <template v-if="item.imgList.length === 1 && item.imgList[0] === ''">
+                    <div class="live_bg">
+                    </div>
+                  </template>
                   <el-carousel indicator-position="none">
-                    <el-carousel-item v-for="(item, index) in imgList"
-                                      :key="index">
-                      <h3>{{ item }}</h3>
-                    </el-carousel-item>
+                    <template v-for="(item, index) in item.imgList">
+                      <el-carousel-item :key="index"
+                                        v-if="item !== ''">
+                        <img v-if="item"
+                             :src="item">
+                      </el-carousel-item>
+                    </template>
                   </el-carousel>
                 </template>
-                <template v-else>>
-                  <div class="upImgBegin">
-
-                  </div>
-                </template>
-
               </div>
             </div>
           </template>
@@ -261,8 +266,8 @@
       <div class="box">
         <el-row>
           <el-button type="primary"
-                     @click="submit">提交</el-button>
-          <el-button>预览</el-button>
+                     @click="submitFunc">提交</el-button>
+          <el-button @click="previewFunc">预览</el-button>
         </el-row>
       </div>
     </div>
@@ -282,25 +287,32 @@ export default {
   name: 'show',
   data () {
     return {
-      imgList: ['../../assets/images/compileRightList01.png', '../../assets/images/compileRightList03.png'],
       isType: '',
       ind: 0,
       isShow: true
     }
   },
   mounted () {
-    // http://mp.ofweek.com/Homepage/getHomePage?member_id=1151
-    // 上移\
     let data = {
+      // member_id: this.$getMemberId
       member_id: this.$getMemberId
     }
     getHomePage(data)
       .then((res) => {
-        if (res.status === 200) {
+        if (res.status === 200 && this.isJsonString(res.data)) {
           let arr = JSON.parse(res.data)
           let typeData = {
             type: 'all',
             arr: this.deepClone(arr)
+          }
+          this.setCompileList(typeData)
+        } else {
+          // compileList加入关于XXX  $public_name
+          var obj = this.compileList[0]
+          obj.interName = this.$public_name
+          let typeData = {
+            type: 1,
+            arr: this.deepClone(obj)
           }
           this.setCompileList(typeData)
         }
@@ -308,7 +320,17 @@ export default {
   },
   methods: {
     ...mapMutations(['setCompileList', 'setIsMask']),
-    submit () {
+    previewFunc () {
+      // 预览不发送请求，更新vuex 跳转路由preview  存入locastore
+      // this.compileList
+      window.localStorage.setItem('compileList', JSON.stringify(this.compileList))
+      let newUrl = this.$router.resolve({
+        path: '/preview'
+      })
+      window.open(newUrl.href, '_blank')
+    },
+    submitFunc () {
+      // 提交发送请求，保存vuex中的数组compileList
       let data = {
         member_id: this.$getMemberId,
         compileList: JSON.stringify(this.compileList)
@@ -321,6 +343,9 @@ export default {
               message: '提交成功',
               type: 'success'
             })
+            setTimeout(() => {
+              location.reload()
+            }, 1000)
           } else {
             this.$message.error(res.info)
           }
@@ -396,19 +421,42 @@ export default {
   },
   components: { maskPop },
   computed: {
-    ...mapGetters(['compileList', 'indexList', 'isMask'])
+    ...mapGetters(['compileList', 'isMask'])
+
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="sass" scoped>
+.content
+  font-family: "Avenir", Helvetica, Arial, sans-serif
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  color: #2c3e50
+  width: auto
+  background: #fff
+  position: absolute
+  top: 35px
+  left: 0%
+  padding: 32px 100px
+  padding-left: 0
+  overflow: hidden
+  overflow-y: auto
+  -ms-overflow-style: none
+  overflow: -moz-scrollbars-none
+  h3
+    font-size: 16px
+
+  &::-webkit-scrollbar
+    display: none
+
 .main
   width: 1120px
   position: relative
   .el-row
     text-align: center
-  .el-button
+  .el-but button
     width: 90px
   .addElement
     position: absolute
@@ -453,7 +501,7 @@ export default {
       .go_bottom_on
         background: url(../../assets/images/icon/icon_down_on.png) no-repeat center
         background-size: contain
-      .close
+      .setClose
         background: url(../../assets/images/icon/icon_recycle.png) no-repeat center
         background-size: contain
       p
@@ -492,6 +540,7 @@ export default {
             line-height: 64px
             box-sizing: border-box
             padding: 0 20px
+            font-size: 14px
             background-color: #fff
             border-top: 1px solid #D1D1D1
           .liImg
@@ -638,6 +687,7 @@ export default {
           line-height: 20px
           padding-right: 20px
           text-align: right
+          font-size: 14px
         .title
           height: 100px
           border-bottom: 1px solid #CCCCCC
@@ -647,6 +697,11 @@ export default {
             font-size: 30px
             font-weight: bold
             color: #00467E
+            width: 100%
+            white-space: nowrap
+            text-overflow: ellipsis
+            overflow: hidden
+            word-break: break-all
         .text
           display: block
           box-sizing: border-box
@@ -665,6 +720,15 @@ export default {
       .right
         width: 540px
         padding: 40px 45px
+        .live_bg
+          position: absolute
+          top: 50%
+          left: 50%
+          transform: translate(-50%,-50%)
+          z-index: 111
+          width: 444px
+          height: 320px
+          background: url('../../assets/images/live_bg.png') no-repeat center
         .imgWrap
           position: relative
           width: 444px

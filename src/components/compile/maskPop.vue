@@ -1,9 +1,9 @@
 <template>
   <!-- 弹窗 -->
   <div class="maskWrap">
-    <div class="mask">
+    <div class="masks">
       <img src="../../assets/images/icon/icon_close.png"
-           class="close"
+           class="maskClose"
            @click="isMaskFunc">
       <h4 class="title"
           v-html="isType"></h4>
@@ -16,19 +16,39 @@
           <!-- 上传图片 -->
           <div class="upImgView">
             <span><i>*</i>上传图片:</span>
-            <ul v-for="(item,index) in upImgList"
-                :key="index">
-              <li @click="upImgFunc(index)">
-                <!-- <i class="closeImg"
-                   @click="closeImg(index)"></i> -->
+            <ul>
+              <li @click="setImgFunc(index)"
+                  v-for="(item,index) in upImgList"
+                  :key="index">
+                <ImgCutter ref="imgCutterModal"
+                           :cross-origin="true"
+                           :is-modal="true"
+                           :show-choose-btn="true"
+                           :lock-scroll="true"
+                           :box-width="600"
+                           :box-height="400"
+                           :cut-width="444"
+                           :cut-height="320"
+                           :size-change="true"
+                           :move-able="true"
+                           @cutDown="xztpCutDown">
+                  <el-button slot="open"
+                             type="primary">
+                    <img src="../../assets/images/icon/icon_upImg.png"
+                         alt=""
+                         v-if="!item">
+                    <img v-else
+                         :src="item"
+                         alt="">
+                  </el-button>
+                </ImgCutter>
               </li>
             </ul>
-            <upload></upload>
           </div>
           <div class="upImgView">
             <span>跳转链接:</span>
             <input type="text"
-                   v-model="itemModule.target_link">
+                   v-model="target_link">
           </div>
         </div>
         <table v-else
@@ -90,8 +110,9 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
-import { getPageVideoList, getPageNewsList, findLiveRoomListByid, getProductList, documentList } from '@/api'
-import upload from '../../components/compile/upload.vue'
+import { getPageVideoList, getPageNewsList, findLiveRoomListByid, getProductList, documentList, upload } from '@/api'
+import ImgCutter from 'vue-img-cutter'
+// import axios from 'axios'
 export default {
   name: 'show',
   data () {
@@ -107,7 +128,9 @@ export default {
       itemIdArr: [],
       loading: false,
       noMoreStart: true,
-      upImgList: []
+      upImgList: [],
+      imgIndex: 0,
+      target_link: ''
     }
   },
   props: {
@@ -123,7 +146,7 @@ export default {
     }
   },
   components: {
-    'upload': upload
+    ImgCutter
   },
   computed: {
     ...mapGetters(['isMask', 'compileList']),
@@ -139,6 +162,68 @@ export default {
     isMaskFunc: function () {
       this.setIsMask(!this.isMask)
     },
+    setImgFunc (index) {
+      this.imgIndex = index
+    },
+    // 上传图片
+    xztpCutDown (files) {
+      let obj = { images: files.dataURL }
+
+      upload(obj)
+        .then((res) => {
+          if (res.status === 200) {
+            this.$message({
+              message: res.info,
+              type: 'success'
+            })
+            let newImg = `https://mp.ofweek.com${res.data}`
+            if (this.imgIndex <= 3) {
+              if (this.upImgList.length === 3) {
+                this.$set(this.upImgList, this.imgIndex, newImg)
+                // debugger
+              } else {
+                this.$set(this.upImgList, this.imgIndex, newImg)
+                this.upImgList.push('')
+                // debugger
+              }
+            }
+          } else {
+            this.$message({
+              message: res.info,
+              type: 'error'
+            })
+          }
+        })
+        .catch((err) => {
+          alert(1)
+          this.$message({
+            message: err.info,
+            type: 'error'
+          })
+        })
+      // const imgData = new FormData()
+      // imgData.append('file', files.file)
+      // axios.post('/api/home/news/ajax_upload_img', imgData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       this.$message({
+      //         message: res.info,
+      //         type: 'error'
+      //       })
+      //     } else {
+      //       this.$message({
+      //         message: res.info,
+      //         type: 'error'
+      //       })
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     this.$message({
+      //       message: err.info,
+      //       type: 'error'
+      //     })
+      //   })
+    },
     setMaskText: function (tips, name, imgName) {
       this.tips = tips
       this.tableName = name
@@ -148,6 +233,24 @@ export default {
       let data = { arr: this.deepClone(this.itemArr) }
       switch (this.isType) {
         case '企业图片':
+          for (let i = 0; i < this.compileList.length; i++) {
+            let item = this.compileList[i]
+            if (item.type === 1) {
+              let obj = item
+              obj.imgList = this.deepClone(this.upImgList)
+              // debugger
+              obj.target_link = item.target_link
+              data.arr = this.deepClone(obj)
+              data.type = 1
+              data.setName = 'imgList'
+              break
+            }
+          }
+          // debugger
+          // console.log(data)
+          this.setCompileList(data)
+          console.log(this.compileList)
+          // debugger
           break
         case '企业动态':
           data.type = 2
@@ -216,7 +319,7 @@ export default {
       if (index === -1) {
         // 不存在,则添加
         // debugger
-        if (this.itemIdArr.length === maxLength) {
+        if (this.itemIdArr.length >= maxLength) {
           this.$message({
             showClose: true,
             message: message
@@ -231,7 +334,6 @@ export default {
         this.itemIdArr.splice(index, 1)
         this.itemArr.splice(index, 1)
       }
-      console.log(this.itemIdArr)
     },
     load () {
       this.loading = true
@@ -240,7 +342,6 @@ export default {
         page_size: this.page_size,
         member_id: this.$getMemberId
       }
-      console.log('load')
       switch (this.isType) {
         case '企业动态':
           this.setMaskText('备注：最多只能添加5篇文章', '文章标题')
@@ -252,18 +353,20 @@ export default {
           break
         case '直播':
           this.setMaskText('备注：最多只能添加1个直播', '活动名称', '封面图')
-          data = { account: this.$getAccount }
+          // data = { account: this.$getAccount }
+          data = { account: 'P14cd2a1d17fc7d011d67809d4c756153' }
           this.getMessage(findLiveRoomListByid, data, 'liveList')
           break
         case '文档下载':
           this.setMaskText('备注：最多只能添加4个文档', '文档标题')
-          // https://wenku.ofweek.com/api/ofweek_mp.php?
-          data = { username: this.$getUsername }
+          //  data = { username: this.$getAccount } 没数据
+          data = { username: 'Pa8db91c3faca302fcd9d854891542cf9' }
           this.getMessage(documentList, data, 'documentList')
           break
         case '产品介绍':
           this.setMaskText('备注：最多只能添加6个产品', '产品标题', '产品图')
-          data = { account: this.$getAccount }
+          // data = { account: this.$getAccount }
+          data = { account: 'P14cd2a1d17fc7d011d67809d4c756153' }
           this.getMessage(getProductList, data, 'productList')
           break
         default:
@@ -297,23 +400,28 @@ export default {
             }
             if ((Array.isArray(res)) || res.status === 200 || res.code === 0) {
               if (obj.length > 0) {
+                if (arrName === 'liveList' || arrName === 'productList') {
+                  // 这俩货不分页，下次请求还有一模一样的数据，所以发一次直接禁了
+                  this.noMoreStart = false
+                }
                 this.loading = false
                 // 遍历修改数据格式然后插入
                 // 找出需要遍历对象
                 obj.forEach((item, index) => {
                   // 获取当前id
-                  let id = item.id
+                  // console.log(item)
+                  // debugger
+                  let id = arrName === 'liveList' ? item.roomId : (arrName === 'productList' ? item.productId : item.id)
                   // 找出当前比对的板块
                   if (objData.length > 0) {
                     for (let i = 0; i < objData.length; i++) {
-                      if (objData[i].id === id) {
+                      let objId = arrName === 'liveList' ? objData[i].roomId : (arrName === 'productList' ? objData[i].productId : objData[i].id)
+                      if (objId === id) {
                         item.isChecked = true
-                        // console.log(that.itemArr)
-                        // console.log(that.itemIdArr)
-                        // console.log(objData[i].id)
                         // debugger
                         that.itemArr.push(objData[i])
-                        that.itemIdArr.push(objData[i].id)
+                        // debugger
+                        that.itemIdArr.push(objId)
                         break
                       } else {
                         item.isChecked = false
@@ -329,6 +437,7 @@ export default {
               } else {
                 this.count = false
                 this.loading = false
+                this.noMoreStart = false
                 this.$message({
                   showClose: true,
                   message: '已加载全部'
@@ -371,6 +480,7 @@ export default {
       this.compileList.forEach(item => {
         if (item.type === 1) {
           this.upImgList = item.imgList.length > 0 ? this.deepClone(item.imgList) : ['']
+          this.target_link = item.target_link
         }
       })
     }
@@ -385,7 +495,7 @@ export default {
   top: 0
   left: 0
   width: 100vw
-  height: 100vh
+  height: 100%
   background-color: rgba(0,0 ,0,.7)
   z-index: 111
   .el-button
@@ -395,18 +505,18 @@ export default {
   //   width: 20px
   //   height: 20px
   //   border: 1px solid #ccc
-  .mask
+  .masks
     position: absolute
     top: 50%
     left: 50%
     transform: translate(-50%,-50%)
-    width: 900px
+    width: 960px
     height: 750px
     overflow: hidden
     background: #FCFCFC
     box-sizing: border-box
     padding: 40px 50px
-    .close
+    .maskClose
       position: absolute
       top: 50px
       right: 50px
@@ -441,17 +551,17 @@ export default {
         ul
           display: inline-block
           margin-bottom: 40px
-          width: 680px
+          width: 660px
+          white-space: nowrap
+          overflow: hidden
           li
             position: relative
+            display: inline-block
             width: 200px
             height: 144px
-            background: #F0F0F0
-            border: 1px solid #CCCCCC
-            background: url(../../assets/images/icon/icon_upImg.png) no-repeat center
-            background-size: 100%,100%
             border-radius: 2px
             margin-right: 20px
+
             .closeImg
               position: absolute
               right: 10px
@@ -459,6 +569,19 @@ export default {
               width: 12px
               height: 15px
               background: url(../../assets/images/icon/icon_recycle.png) no-repeat center
+            .el-button--primary
+              background-color:
+              display: block
+              width: 200px
+              height: 144px
+              margin: 0px
+              padding: 0
+              border: 0px
+              background-color: rgba(220,38,38,0)
+            img
+              display: block
+              width: 100%
+              height: 100%
         input
           width: 500px
           height: 36px
@@ -487,4 +610,6 @@ export default {
             display: block
             width: 140px
             margin: 0 auto
+  .mask
+    width: 100%
 </style>

@@ -60,10 +60,10 @@ export function getHomePage (params) {
     params
   })
 }
-// 提交编辑页面
+// 上传图片
 export function upload (data) {
   return requests({
-    url: '/home/news/ajax_upload_img',
+    url: '/Homepage/upload',
     method: 'post',
     data
   })
