@@ -5,7 +5,7 @@ import Qs from 'qs'
 const baseUrl =
   process.env.NODE_ENV === 'development'
     ? '/api' // 测试环境
-    : 'https://mp.ofweek.com' // 现网环境
+    : '//mp.ofweek.com' // 现网环境/Api/getHomePage
 const requests = axios.create({
   baseURL: baseUrl, // url = base url + request url
   timeout: 1000000,
@@ -42,7 +42,7 @@ requests.interceptors.response.use(
 const liveUrl =
   process.env.NODE_ENV === 'development'
     ? '/live' // 本地环境
-    : 'https://livetest.ofweek.com' // 现网环境  https://live.ofweek.com
+    : '//livetest.ofweek.com' // 现网环境  https://live.ofweek.com
 const requestsLive = axios.create({
   baseURL: liveUrl, // url = base url + request url
   timeout: 1000000,
@@ -74,7 +74,7 @@ requestsLive.interceptors.response.use(
 const wenkuUrl =
   process.env.NODE_ENV === 'development'
     ? '/wenku' // 测试环境
-    : 'https://wenku.ofweek.com' // 现网环境
+    : '//wenku.ofweek.com' // 现网环境
 const requestswenku = axios.create({
   baseURL: wenkuUrl, // url = base url + request url
   timeout: 1000000,

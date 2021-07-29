@@ -35,18 +35,15 @@
                   <textarea name=""
                             maxlength="400"
                             v-model="item.interText"
+                            @input="setValueLength(item.interText.length)"
                             placeholder="请填写企业介绍（400字内）"></textarea>
                 </div>
-                <p class="num">{{item.interText.length}}/400</p>
+                <p class="num">{{valueNum}}/400</p>
               </div>
               <div class="right">
                 <!-- 图片 -->
                 <div class="addElement"
                      @click="addElementFunc('企业图片',index)">去添加</div>
-                <!-- <template v-if="item.target_link"> -->
-                <!-- <a :href="item.target_link"
-                     target="_blank"> -->
-
                 <template>
                   <template v-if="item.imgList.length === 1 && item.imgList[0] === ''">
                     <div class="live_bg">
@@ -164,10 +161,18 @@
             <div class="live wrap borDE">
               <div class="left">
                 <!-- logoUrl  name -->
-                <div class="liveBg">
-                  <img :src="item.liveList.length > 0 && item.liveList[0].coverUrl"
+                <div class="liveBg"
+                     v-if="item.liveList.length > 0 ">
+                  <img :src="item.liveList[0].coverUrl"
                        alt=""
                        class="liveImg">
+                </div>
+                <div class="liveBg"
+                     v-else>
+                  <img src="../../assets/images/icon/icon_img.png"
+                       alt=""
+                       class="liveImg"
+                       style="width: 200px;height:150px">
                 </div>
               </div>
               <div class="right">
@@ -184,6 +189,10 @@
                   <span>直播简介：</span>
                   <span class="c">{{item.liveList.length > 0 ? item.liveList[0].description : ''}}</span>
                 </p>
+                <a :href="item.liveList[0].roomUrl"
+                   v-if="item.liveList.length > 0"
+                   class="liveBtn"
+                   :style="{background: (item.liveList[0].status === 6?'#E65E50':'linear-gradient(0deg, #2691e9, #2d84ee)')}">{{item.liveList[0].status == 1? '直播中':(item.liveList[0].status == 3? '直播预告':'直播回顾')}}</a>
               </div>
             </div>
           </template>
@@ -289,7 +298,8 @@ export default {
     return {
       isType: '',
       ind: 0,
-      isShow: true
+      isShow: true,
+      valueNum: 0
     }
   },
   mounted () {
@@ -320,6 +330,9 @@ export default {
   },
   methods: {
     ...mapMutations(['setCompileList', 'setIsMask']),
+    setValueLength (num) {
+      this.valueNum = num
+    },
     previewFunc () {
       // 预览不发送请求，更新vuex 跳转路由preview  存入locastore
       // this.compileList
@@ -422,13 +435,17 @@ export default {
   components: { maskPop },
   computed: {
     ...mapGetters(['compileList', 'isMask'])
-
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="sass" scoped>
+@mixin ellipsis()
+  white-space: nowrap
+  text-overflow: ellipsis
+  overflow: hidden
+
 .content
   font-family: "Avenir", Helvetica, Arial, sans-serif
   -webkit-font-smoothing: antialiased
@@ -471,6 +488,9 @@ export default {
     color: #FFFFFF
     line-height: 30px
     cursor: pointer
+  @media screen and (max-width: 1500px)
+    .box
+      width: 1020px !important
   .box
     position: relative
     width: 1120px
@@ -522,7 +542,7 @@ export default {
         flex-wrap: wrap
         li
           position: relative
-          width: 350px
+          width: 31%
           height: 280px
           border: 1px solid #D1D1D1
           margin-bottom: 20px
@@ -543,6 +563,7 @@ export default {
             font-size: 14px
             background-color: #fff
             border-top: 1px solid #D1D1D1
+            @include ellipsis
           .liImg
             position: absolute
             top: 39%
@@ -558,7 +579,7 @@ export default {
         flex-wrap: wrap
         li
           position: relative
-          width: 260px
+          width: 23%
           height: 130px
           background: #F9F9F9
           border: 1px solid #D1D1D1
@@ -610,6 +631,20 @@ export default {
         width: 420px
         box-sizing: border-box
         padding: 35px
+        .liveBtn
+          width: 120px
+          height: 34px
+          line-height: 34px
+          background: linear-gradient(0deg, #2691e9, #2d84ee)
+          border-radius: 4px
+          font-size: 16px
+          font-family: PingFang SC
+          font-weight: bold
+          color: #FFFFFF
+          position: absolute
+          bottom: 18px
+          right: 135px
+          text-align: center
         h4
           font-size: 18px
           font-weight: bold
@@ -658,9 +693,12 @@ export default {
             color: #333333
             line-height: 18px
             margin: 10px 0
-
+            @include ellipsis
+      @media screen and (max-width: 1500px)
+        .textlist
+          width: 590px !important
       .textlist
-        width: 700px
+        width: 680px
         li
           display: block
           width: 100%
@@ -672,6 +710,7 @@ export default {
           box-sizing: border-box
           padding: 0 25px
           margin-bottom: 15px
+          @include ellipsis
     // 介绍板块
     .wrap
       display: flex
@@ -699,9 +738,7 @@ export default {
             color: #00467E
             width: 100%
             white-space: nowrap
-            text-overflow: ellipsis
-            overflow: hidden
-            word-break: break-all
+            @include ellipsis
         .text
           display: block
           box-sizing: border-box

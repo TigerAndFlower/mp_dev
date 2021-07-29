@@ -33,6 +33,8 @@ export function getQueryString (name) {
     return null
   }
 }
+
+// 判断是否是JSON
 export function isJsonString (str) {
   try {
     if (typeof JSON.parse(str) === 'object') {
@@ -66,13 +68,13 @@ export function formatDate (value, format) {
 }
 export function getID (name) {
   if (name === 'id') {
-    console.log(`id:${getQueryString('member_id')}`)
+    // console.log(`id:${getQueryString('member_id')}`)
     return getQueryString('member_id') ? getQueryString('member_id') : 864
   } else if (name === 'username') {
-    console.log(`username:${getQueryString('username')}`)
+    //  console.log(`username:${getQueryString('username')}`)
     return getQueryString('username') ? getQueryString('username') : 'P14cd2a1d17fc7d011d67809d4c756153'
   } else if (name === 'public_name') {
-    console.log(`public_name:${getQueryString('public_name')}`)
+    //  console.log(`public_name:${getQueryString('public_name')}`)
     return getQueryString('public_name')
   }
 }

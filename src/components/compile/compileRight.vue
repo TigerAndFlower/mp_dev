@@ -94,7 +94,7 @@ export default {
 <style lang="sass" scoped>
 .content
   position: fixed
-  top: 60px
+  top: 10px
   right: 20px
   background: #fff
   box-sizing: border-box

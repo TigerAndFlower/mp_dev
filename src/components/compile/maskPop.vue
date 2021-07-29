@@ -239,7 +239,7 @@ export default {
               let obj = item
               obj.imgList = this.deepClone(this.upImgList)
               // debugger
-              obj.target_link = item.target_link
+              obj.target_link = this.target_link
               data.arr = this.deepClone(obj)
               data.type = 1
               data.setName = 'imgList'
@@ -490,6 +490,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="sass" scoped>
+// @mixin sm_masks()
+//   .masks
+//     transform: translate(-50%,-50%) scale(.7) !important
 .maskWrap
   position: fixed
   top: 0
@@ -505,6 +508,11 @@ export default {
   //   width: 20px
   //   height: 20px
   //   border: 1px solid #ccc
+
+  @media screen and (max-width: 1500px)
+    .masks
+      transform: translate(-50%,-50%) scale(.6) !important
+
   .masks
     position: absolute
     top: 50%

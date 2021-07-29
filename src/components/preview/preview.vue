@@ -18,24 +18,25 @@
               </div>
               <div class="right">
                 <template v-if="item.target_link">
-                  <a :href="item.target_link"
-                     target="_blank">
-                    <el-carousel indicator-position="none">
-                      <template v-for="(item, index) in item.imgList">
-                        <el-carousel-item :key="index"
-                                          v-if="item !== ''">
-                          <img :src="item">
-                        </el-carousel-item>
-                      </template>
-                    </el-carousel>
-                  </a>
+                  <el-carousel indicator-position="none">
+                    <template v-for="(imgItem, imgIndex) in item.imgList">
+                      <el-carousel-item :key="imgIndex"
+                                        v-if="imgItem !== ''">
+                        <a :href="item.target_link"
+                           target="_parent">
+                          <img :src="imgItem">
+                        </a>
+                      </el-carousel-item>
+                    </template>
+                  </el-carousel>
+
                 </template>
                 <template v-else>
                   <el-carousel indicator-position="none">
-                    <template v-for="(item, index) in item.imgList">
-                      <el-carousel-item :key="index"
-                                        v-if="item !== ''">
-                        <img :src="item">
+                    <template v-for="(imgItem, imgIndex) in item.imgList">
+                      <el-carousel-item :key="imgIndex"
+                                        v-if="imgItem !== ''">
+                        <img :src="imgItem">
                       </el-carousel-item>
                     </template>
                   </el-carousel>
@@ -49,7 +50,6 @@
               <div class="left"
                    v-if="item.dynamicList.length > 0"
                    :style="{width: (item.videoList.length <= 0?'100%':'')}">
-
                 <!-- 企业动态 -->
                 <div class="boxTitle">
                   <img src="../../assets/images/icon/icon_title1.png"

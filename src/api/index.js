@@ -55,7 +55,8 @@ export function saveHomePage (data) {
 // 获取编辑数据
 export function getHomePage (params) {
   return requests({
-    url: '/Homepage/getHomePage',
+    // url: '/Homepage/getHomePage',
+    url: '/Api/getHomePage',
     method: 'get',
     params
   })

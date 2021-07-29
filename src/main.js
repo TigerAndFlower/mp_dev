@@ -19,7 +19,6 @@ Vue.prototype.deepClone = deepClone
 Vue.prototype.getQueryString = getQueryString
 Vue.prototype.formatDate = formatDate
 Vue.prototype.isJsonString = isJsonString
-
 Vue.prototype.$getMemberId = getID('id')
 Vue.prototype.$getAccount = getID('username')
 Vue.prototype.$public_name = getID('public_name')
