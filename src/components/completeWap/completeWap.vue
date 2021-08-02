@@ -21,7 +21,7 @@
                   </div>
                   <div class="text"
                        v-if="item.interText">
-                    <p>{{item.interText}}</p>
+                    <p v-html="item.interText.replace(/\n/g,'<br>')"></p>
                   </div>
                 </div>
                 <div class="right"
@@ -71,8 +71,7 @@
                         :key="indynamicIndex"
                         class="ellipsis">
                       <a :href="indynamic.url"
-                         target="_parent"
-                         rel="noopener noreferrer">{{indynamic.title}}</a>
+                         target="_parent">{{indynamic.title}}</a>
                     </li>
                   </ul>
                 </div>
@@ -89,8 +88,7 @@
                     <li v-for="(video,videoIndex) in item.videoList"
                         :key="videoIndex">
                       <a :href="video.url"
-                         target="_parent"
-                         rel="noopener noreferrer">
+                         target="_parent">
                         <div class="videoWrap">
                           <img :src="'http://mp.ofweek.com'+video.images"
                                alt=""
@@ -160,7 +158,9 @@
                     <li class="on"
                         v-for="(document) in item.documentList"
                         :key="document.id">
-                      <a :href="document.file_url">
+                      <a :href="document.url"
+                         target="_parent"
+                         :download="document.url">
                         <p>{{document.title}}</p>
                         <button>立即下载</button>
                       </a>

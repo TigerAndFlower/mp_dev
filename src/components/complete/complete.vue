@@ -20,7 +20,7 @@
                     <h3>关于{{item.interName}}</h3>
                   </div>
                   <div class="text">
-                    <p>{{item.interText}}</p>
+                    <p v-html="item.interText ? item.interText.replace(/\n/g,'<br>') : '' "></p>
                   </div>
                 </div>
                 <div class="right">
@@ -152,7 +152,9 @@
                   <li class="on"
                       v-for="(document) in item.documentList"
                       :key="document.id">
-                    <a :href="document.file_url">
+                    <a :href="document.url"
+                       :download="document.url"
+                       target="_parent">
                       <p>{{document.title}}</p>
                       <button>立即下载</button>
                     </a>
@@ -475,7 +477,7 @@ export default {
           padding: 0 20px
           width: 100%
           overflow: hidden
-          textarea
+          p
             display: block
             height: 100%
             width: 100%

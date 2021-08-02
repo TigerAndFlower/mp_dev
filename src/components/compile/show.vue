@@ -44,6 +44,10 @@
                 <!-- 图片 -->
                 <div class="addElement"
                      @click="addElementFunc('企业图片',index)">去添加</div>
+                <!-- <template v-if="item.target_link"> -->
+                <!-- <a :href="item.target_link"
+                     target="_blank"> -->
+
                 <template>
                   <template v-if="item.imgList.length === 1 && item.imgList[0] === ''">
                     <div class="live_bg">
@@ -299,7 +303,8 @@ export default {
       isType: '',
       ind: 0,
       isShow: true,
-      valueNum: 0
+      valueNum: 0,
+      introTitle: ''
     }
   },
   mounted () {
@@ -311,12 +316,20 @@ export default {
       .then((res) => {
         if (res.status === 200 && this.isJsonString(res.data)) {
           let arr = JSON.parse(res.data)
+          // compileList加入关于XXX  $public_name
+          arr.forEach((item, index) => {
+            if (item.type === 1) {
+              this.setValueLength(item.interText.length)
+              arr[index].interName = this.$public_name
+            }
+          })
           let typeData = {
             type: 'all',
             arr: this.deepClone(arr)
           }
           this.setCompileList(typeData)
         } else {
+          // 页面进来没数据，以前没填过或者是长图模式
           // compileList加入关于XXX  $public_name
           var obj = this.compileList[0]
           obj.interName = this.$public_name
@@ -385,7 +398,6 @@ export default {
       let arr = this.compileList
       if (type === 'close') {
         arr.splice(i, 1)
-        console.log(arr)
         let typeData = {
           type: 'all',
           arr: this.deepClone(arr)
@@ -698,7 +710,7 @@ export default {
         .textlist
           width: 590px !important
       .textlist
-        width: 680px
+        width: 640px
         li
           display: block
           width: 100%

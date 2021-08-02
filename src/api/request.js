@@ -42,7 +42,7 @@ requests.interceptors.response.use(
 const liveUrl =
   process.env.NODE_ENV === 'development'
     ? '/live' // 本地环境
-    : '//livetest.ofweek.com' // 现网环境  https://live.ofweek.com
+    : '//newlive.ofweek.com' // 现网环境  https://newlive.ofweek.com
 const requestsLive = axios.create({
   baseURL: liveUrl, // url = base url + request url
   timeout: 1000000,

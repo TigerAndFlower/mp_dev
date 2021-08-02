@@ -13,7 +13,7 @@
                   <h3>关于{{item.interName}}</h3>
                 </div>
                 <div class="text">
-                  <p>{{item.interText}}</p>
+                  <p v-html="item.interText.replace(/\n/g,'<br>')"></p>
                 </div>
               </div>
               <div class="right">
@@ -46,10 +46,10 @@
           </template>
           <template v-if="item.type== 2">
             <div class="dynamic wrap">
-
               <div class="left"
                    v-if="item.dynamicList.length > 0"
                    :style="{width: (item.videoList.length <= 0?'100%':'')}">
+                <!-- style="width: 100%" -->
                 <!-- 企业动态 -->
                 <div class="boxTitle">
                   <img src="../../assets/images/icon/icon_title1.png"
@@ -62,7 +62,9 @@
                   <li v-for="(indynamic,indynamicIndex) in item.dynamicList"
                       :key="indynamicIndex"
                       class="ellipsis">
-                    {{indynamic.title}}
+                    <a :href="indynamic.url"
+                       target="_parent"
+                       rel="noopener noreferrer">{{indynamic.title}}</a>
                   </li>
                 </ul>
               </div>
@@ -77,15 +79,19 @@
                 <ul class="videoList">
                   <li v-for="(video,videoIndex) in item.videoList"
                       :key="videoIndex">
-                    <div class="videoWrap">
-                      <img :src="'http://mp.ofweek.com'+video.images"
-                           alt=""
-                           class="bgImg">
-                      <img src="../../assets/images/icon/icon_play.png"
-                           alt=""
-                           class="icon_play">
-                    </div>
-                    <p class="ellipsis">{{video.title}}</p>
+                    <a :href="video.url"
+                       target="_parent"
+                       rel="noopener noreferrer">
+                      <div class="videoWrap">
+                        <img :src="'http://mp.ofweek.com'+video.images"
+                             alt=""
+                             class="bgImg">
+                        <img src="../../assets/images/icon/icon_play.png"
+                             alt=""
+                             class="icon_play">
+                      </div>
+                      <p class="ellipsis">{{video.title}}</p>
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -121,6 +127,9 @@
                   <span>直播简介：</span>
                   <span class="c">{{item.liveList[0].description}}</span>
                 </p>
+                <a :href="item.liveList[0].roomUrl"
+                   class="liveBtn"
+                   :style="{background: (item.liveList[0].status === 6 ? '#E65E50':'linear-gradient(0deg, #2691e9, #2d84ee)')}">{{item.liveList[0].status == 1? '直播中':(item.liveList[0].status == 3? '直播预告':'直播回顾')}}</a>
               </div>
             </div>
           </template>
@@ -136,7 +145,9 @@
                 <li class="on"
                     v-for="(document) in item.documentList"
                     :key="document.id">
-                  <a :href="document.file_url">
+                  <a :href="document.url"
+                     :download="document.url"
+                     target="_parent">
                     <p>{{document.title}}</p>
                     <button>立即下载</button>
                   </a>
@@ -156,7 +167,7 @@
                 <li v-for="product in item.productList"
                     :key="product.productId">
                   <a :href="product.productUrl"
-                     target="_blank">
+                     target="_parent">
                     <img :src="product.imageUrl"
                          alt=""
                          class="liImg">
@@ -189,6 +200,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="sass" scoped>
+@mixin ellipsis()
+  white-space: nowrap
+  text-overflow: ellipsis
+  overflow: hidden
 .main
   width: 1120px
   position: relative
@@ -227,13 +242,13 @@ export default {
             padding: 0 20px
             background-color: #fff
             border-top: 1px solid #D1D1D1
+            @include ellipsis
           .liImg
             position: absolute
             top: 39%
             left: 50%
             transform: translate(-50%,-50%)
             max-height: 210px
-            max-width: 100%
     .downLoad
       ul
         width: 100%
@@ -294,6 +309,20 @@ export default {
         width: 420px
         box-sizing: border-box
         padding: 35px
+        .liveBtn
+          width: 120px
+          height: 34px
+          line-height: 34px
+          background: linear-gradient(0deg, #2691e9, #2d84ee)
+          border-radius: 4px
+          font-size: 16px
+          font-family: PingFang SC
+          font-weight: bold
+          color: #FFFFFF
+          position: absolute
+          bottom: 18px
+          right: 135px
+          text-align: center
         h4
           font-size: 18px
           font-weight: bold
@@ -342,6 +371,7 @@ export default {
             color: #333333
             line-height: 18px
             margin: 10px 0
+            @include ellipsis
 
       .textlist
         width: 700px
@@ -349,13 +379,18 @@ export default {
           display: block
           width: 100%
           background-color: #3B82BB
-          line-height: 50px
-          font-size: 14px
-          font-weight: 400
-          color: #FFFFFF
+
           box-sizing: border-box
           padding: 0 25px
           margin-bottom: 15px
+          a
+            display: block
+            width: 100%
+            line-height: 50px
+            font-size: 14px
+            font-weight: 400
+            color: #FFFFFF
+            @include ellipsis
     // 介绍板块
     .wrap
       display: flex

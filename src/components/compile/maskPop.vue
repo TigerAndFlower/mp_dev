@@ -249,7 +249,7 @@ export default {
           // debugger
           // console.log(data)
           this.setCompileList(data)
-          console.log(this.compileList)
+          // console.log(this.compileList)
           // debugger
           break
         case '企业动态':
@@ -353,20 +353,20 @@ export default {
           break
         case '直播':
           this.setMaskText('备注：最多只能添加1个直播', '活动名称', '封面图')
-          // data = { account: this.$getAccount }
-          data = { account: 'P14cd2a1d17fc7d011d67809d4c756153' }
+          data = { account: this.$getAccount }
+          // data = { account: 'P14cd2a1d17fc7d011d67809d4c756153' }
           this.getMessage(findLiveRoomListByid, data, 'liveList')
           break
         case '文档下载':
           this.setMaskText('备注：最多只能添加4个文档', '文档标题')
-          //  data = { username: this.$getAccount } 没数据
-          data = { username: 'Pa8db91c3faca302fcd9d854891542cf9' }
+          data = { username: this.$getAccount } // 没数据
+          // data = { username: 'Pa8db91c3faca302fcd9d854891542cf9' }
           this.getMessage(documentList, data, 'documentList')
           break
         case '产品介绍':
           this.setMaskText('备注：最多只能添加6个产品', '产品标题', '产品图')
-          // data = { account: this.$getAccount }
-          data = { account: 'P14cd2a1d17fc7d011d67809d4c756153' }
+          data = { account: this.$getAccount }
+          // data = { account: 'P14cd2a1d17fc7d011d67809d4c756153' }
           this.getMessage(getProductList, data, 'productList')
           break
         default:
@@ -400,7 +400,7 @@ export default {
             }
             if ((Array.isArray(res)) || res.status === 200 || res.code === 0) {
               if (obj.length > 0) {
-                if (arrName === 'liveList' || arrName === 'productList') {
+                if (arrName === 'liveList' || arrName === 'productList' || arrName === 'documentList') {
                   // 这俩货不分页，下次请求还有一模一样的数据，所以发一次直接禁了
                   this.noMoreStart = false
                 }

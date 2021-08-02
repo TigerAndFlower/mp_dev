@@ -28,7 +28,7 @@ export function getQueryString (name) {
   str = str.substring(index + 1, str.length)
   var r = str.match(reg)
   if (r != null) {
-    return r[2]
+    return decodeURIComponent(r[2])
   } else {
     return null
   }
