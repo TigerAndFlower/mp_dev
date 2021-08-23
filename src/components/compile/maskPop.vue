@@ -195,7 +195,6 @@ export default {
           }
         })
         .catch((err) => {
-          alert(1)
           this.$message({
             message: err.info,
             type: 'error'

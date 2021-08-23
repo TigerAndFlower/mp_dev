@@ -595,7 +595,7 @@ export default {
           height: 130px
           background: #F9F9F9
           border: 1px solid #D1D1D1
-          margin: 20px 10px
+          margin: 0px 10px
           &.on
             background: url('../../assets/images/icon/icon_downLoad.png') center left #F9F9F9
             background-size: 100% 100%
@@ -687,6 +687,8 @@ export default {
             position: relative
             width: 195px
             height: 115px
+            box-sizing: border-box
+            border: 1px solid #bebebe
             background: #F0F0F0
             .bgImg
               display: block
@@ -696,6 +698,7 @@ export default {
               position: absolute
               top: 50%
               left: 50%
+              width: 32px
               transform: translate(-50%,-50%)
           p
             width: 195px
